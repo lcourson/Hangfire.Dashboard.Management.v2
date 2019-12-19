@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+		<IsPackable>true</IsPackable>
+		<PackageOutputPath>../artifacts</PackageOutputPath>
+		<PackageId>Hangfire.Dashboard.Management.v2-Unofficial</PackageId>
+		<IncludeContentInPack>true</IncludeContentInPack>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description />
+		<Version>2.0.0</Version>
+		<PackageTags>Hangfire Dashboard</PackageTags>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
+	  <OutputPath>bin\Release</OutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.7.7" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="Content\cron.js" />
+		<None Remove="Content\inputmask_min.css" />
+		<None Remove="Content\Libraries\dateTimePicker\bootstrap-datetimepicker.min.css" />
+		<None Remove="Content\Libraries\dateTimePicker\bootstrap-datetimepicker.min.js" />
+		<None Remove="Content\Libraries\inputmask\jquery.inputmask.bundle.min.js" />
+		<None Remove="Content\management.js" />
+		<EmbeddedResource Include="Content\cron.js">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Content\Libraries\inputmask\inputmask.min.css">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Content\Libraries\dateTimePicker\bootstrap-datetimepicker.min.css">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Content\management.js">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Content\Libraries\dateTimePicker\bootstrap-datetimepicker.min.js">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Content\Libraries\inputmask\jquery.inputmask.bundle.min.js">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Properties\" />
+	</ItemGroup>
+</Project>
