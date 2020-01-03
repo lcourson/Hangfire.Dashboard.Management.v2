@@ -1,4 +1,4 @@
-﻿namespace Hangfire.Dashboard.Management.v2Unofficial.Pages
+﻿namespace Hangfire.Dashboard.Management.v2.Pages
 {
 	internal class CronJobsPage : RazorPage
 	{

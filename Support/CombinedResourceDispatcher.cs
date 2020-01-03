@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using Hangfire.Annotations;
 
-namespace Hangfire.Dashboard.Management.v2Unofficial.Support
+namespace Hangfire.Dashboard.Management.v2.Support
 {
     internal class CombinedResourceDispatcher : EmbeddedResourceDispatcher
     {

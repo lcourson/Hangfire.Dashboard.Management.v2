@@ -1,18 +1,26 @@
 using System;
 
-namespace Hangfire.Dashboard.Management.v2Unofficial.Metadata
+namespace Hangfire.Dashboard.Management.v2.Metadata
 {
 	public class ManagementPageAttribute : Attribute
 	{
-		public string Title { get; }
-		public string MenuName { get; }
-		public string Queue { get; }
+		/// <summary>
+		/// Title to display as header for Jobs
+		/// </summary>
+		public string Title { get; set; }
 
-		public ManagementPageAttribute(string title, string menuName, string queue)
+		/// <summary>
+		/// Name of the Menu that contains the jobs
+		/// </summary>
+		public string MenuName { get; set; }
+
+		public ManagementPageAttribute(string menuName, string title)
 		{
-			Title = title;
 			MenuName = menuName;
-			Queue = queue;
+			Title = title;
+		}
+		public ManagementPageAttribute()
+		{
 		}
 	}
 }

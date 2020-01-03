@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Hangfire.Dashboard.Management.v2Unofficial.Support
+namespace Hangfire.Dashboard.Management.v2.Support
 {
     internal class CommandWithResponseDispatcher : IDashboardDispatcher
     {

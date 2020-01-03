@@ -1,4 +1,4 @@
-﻿(function (hangfire) {
+(function (hangfire) {
 
     hangfire.Management = (function () {
         function Management() {
@@ -29,6 +29,20 @@
                 var $this = $(this);
                 var id = $this.data("id");
 
+                $(this).on('click', '.data-list-options .option',
+                    function (e) {
+                        e.preventDefault();
+                        var $this = $(this);
+                        var optionValue = $this.data('optionvalue');
+                        var optionText = $this.data('optiontext');
+
+                        var optionsId = $this.parents('ul').data('optionsid');
+                        var $button = $('#' + optionsId, container);
+
+                        $button.data('selectedvalue', optionValue);
+                        $button.find('.input-data-list-text').text(optionText);
+
+                    });
                 $(this).on('click', '.commands-type',
                     function (e) {
                         var $this = $(this);
@@ -76,6 +90,9 @@
                         });
                         $("textarea[id^='" + id + "']", container).each(function () { send[$(this).attr('id')] = $(this).val(); });
                         $("select[id^='" + id + "']", container).each(function () { send[$(this).attr('id')] = $(this).val(); });
+
+                        $(".input-control-data-list[id^='" + id + "']", container).each(function () { send[$(this).attr('id')] = $(this).data('selectedvalue'); });
+
                         $("div[id^='" + id + "']", container).each(function () { send[$(this).attr('id')] = $(this).data('date'); });
 
                         if ($this.attr('schedule')) {
@@ -105,6 +122,9 @@
 
                         e.preventDefault();
                     });
+
+                $('.input-group *[title], .btn-group *[title]').tooltip('destroy');
+                $('.input-group *[title], .btn-group *[title]').tooltip({ container: 'body' });
             });
         };
 
@@ -128,4 +148,4 @@
 
 })(window.Hangfire = window.Hangfire || {});
 
-Hangfire.management = new Hangfire.Management();
+new Hangfire.Management();

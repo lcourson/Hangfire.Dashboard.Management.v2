@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 
-using Hangfire.Dashboard.Management.v2Unofficial.Pages;
-using Hangfire.Dashboard.Management.v2Unofficial.Support;
+using Hangfire.Dashboard.Management.v2.Pages;
+using Hangfire.Dashboard.Management.v2.Support;
 
-namespace Hangfire.Dashboard.Management.v2Unofficial
+namespace Hangfire.Dashboard.Management.v2
 {
 	public static class GlobalConfigurationExtension
 	{
@@ -23,18 +23,17 @@ namespace Hangfire.Dashboard.Management.v2Unofficial
 
 		private static void CreateManagement()
 		{
-			var pageSet = new Dictionary<string, string>();
+			var pageSet = new List<string>();
 			foreach (var pageInfo in JobsHelper.Pages) {
-				ManagementBasePage.AddCommands(pageInfo.Queue);
-				if (!pageSet.ContainsKey(pageInfo.Queue)) {
-					pageSet.Add(pageInfo.Queue, pageInfo.Queue);
-					ManagementSidebarMenu.Items.Add(p => new MenuItem(pageInfo.Queue, p.Url.To($"{ManagementPage.UrlRoute}/{pageInfo.Queue.Replace(" ", "").ToLower()}")) {
-						Active = p.RequestPath.StartsWith($"{ManagementPage.UrlRoute}/{pageInfo.Queue.Replace(" ", "").ToLower()}")
+				ManagementBasePage.AddCommands(pageInfo.MenuName);
+				if (!pageSet.Contains(pageInfo.MenuName)) {
+					pageSet.Add(pageInfo.MenuName);
+					ManagementSidebarMenu.Items.Add(p => new MenuItem(pageInfo.MenuName, p.Url.To($"{ManagementPage.UrlRoute}/{pageInfo.MenuName.ScrubURL()}")) {
+						Active = p.RequestPath.StartsWith($"{ManagementPage.UrlRoute}/{pageInfo.MenuName.ScrubURL()}")
 					});
 				}
 
-
-				DashboardRoutes.Routes.AddRazorPage($"{ManagementPage.UrlRoute}/{pageInfo.Queue.Replace(" ", "").ToLower()}", x => new ManagementBasePage(pageInfo.Title, pageInfo.Title, pageInfo.Queue));
+				DashboardRoutes.Routes.AddRazorPage($"{ManagementPage.UrlRoute}/{pageInfo.MenuName.ScrubURL()}", x => new ManagementBasePage(pageInfo.MenuName));
 			}
 
 			//note: have to use new here as the pages are dispatched and created each time. If we use an instance, the page gets duplicated on each call
@@ -43,14 +42,14 @@ namespace Hangfire.Dashboard.Management.v2Unofficial
 			// can't use the method of Hangfire.Console as it's usage overrides any similar usage here. Thus
 			// we have to add our own endpoint to load it and call it from our code. Actually is a lot less work
 
-			DashboardRoutes.Routes.Add("/jsmcss",
+			DashboardRoutes.Routes.Add($"{ManagementPage.UrlRoute}/jsmcss",
 				new CombinedResourceDispatcher(
 					"text/css",
 					typeof(GlobalConfigurationExtension).GetTypeInfo().Assembly,
-					$"{typeof(GlobalConfigurationExtension).Namespace}.Content", new[] { "Libraries.dateTimePicker.bootstrap-datetimepicker.min.css", "Libraries.inputmask.inputmask.min.css" }
+					$"{typeof(GlobalConfigurationExtension).Namespace}.Content", new[] { "Libraries.dateTimePicker.bootstrap-datetimepicker.min.css", "Libraries.inputmask.inputmask.min.css", "management.css" }
 					)
 				);
-			DashboardRoutes.Routes.Add("/jsm",
+			DashboardRoutes.Routes.Add($"{ManagementPage.UrlRoute}/jsm",
 				new CombinedResourceDispatcher(
 					"application/javascript",
 					typeof(GlobalConfigurationExtension).GetTypeInfo().Assembly,

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Hangfire.Dashboard.Management.v2Unofficial.Metadata
+namespace Hangfire.Dashboard.Management.v2.Metadata
 {
     public interface IInputDataList
     {

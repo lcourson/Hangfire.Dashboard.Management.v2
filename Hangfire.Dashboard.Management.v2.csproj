@@ -1,28 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+		<TargetFrameworks>netcoreapp2.2;net461</TargetFrameworks>
 		<IsPackable>true</IsPackable>
 		<PackageOutputPath>../artifacts</PackageOutputPath>
-		<PackageId>Hangfire.Dashboard.Management.v2-Unofficial</PackageId>
+		<PackageId>Hangfire.Dashboard.Management.v2</PackageId>
 		<IncludeContentInPack>true</IncludeContentInPack>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Description />
 		<Version>2.0.0</Version>
-		<PackageTags>Hangfire Dashboard</PackageTags>
+		<PackageTags>hangfire dashboard management</PackageTags>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+		<Authors>Hangfire.Dashboard.Management.v2</Authors>
+		<Company />
+		<Product>Hangfire.Dashboard.Management.v2</Product>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
-	  <OutputPath>bin\Release</OutputPath>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.2|AnyCPU'">
+	  <Optimize>true</Optimize>
+	  <DefineConstants>TRACE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.2|AnyCPU'">
+	  <DebugType>full</DebugType>
+	  <DebugSymbols>true</DebugSymbols>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Hangfire.AspNetCore" Version="1.7.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
 	</ItemGroup>
 	<ItemGroup>
+		<None Remove=".gitignore" />
 		<None Remove="Content\cron.js" />
 		<None Remove="Content\inputmask_min.css" />
 		<None Remove="Content\Libraries\dateTimePicker\bootstrap-datetimepicker.min.css" />
 		<None Remove="Content\Libraries\dateTimePicker\bootstrap-datetimepicker.min.js" />
 		<None Remove="Content\Libraries\inputmask\jquery.inputmask.bundle.min.js" />
+		<None Remove="Content\management.css" />
 		<None Remove="Content\management.js" />
+		<None Remove="LICENSE.md" />
+		<None Remove="management.PNG" />
+		<None Remove="README.md" />
 		<EmbeddedResource Include="Content\cron.js">
 		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</EmbeddedResource>
@@ -31,6 +47,9 @@
 		</EmbeddedResource>
 		<EmbeddedResource Include="Content\Libraries\dateTimePicker\bootstrap-datetimepicker.min.css">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Content\management.css">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</EmbeddedResource>
 		<EmbeddedResource Include="Content\management.js">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>

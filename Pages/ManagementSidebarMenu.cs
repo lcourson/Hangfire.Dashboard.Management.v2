@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Hangfire.Dashboard.Management.v2Unofficial.Pages
+namespace Hangfire.Dashboard.Management.v2.Pages
 {
     public static class ManagementSidebarMenu
     {

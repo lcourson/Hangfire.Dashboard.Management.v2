@@ -4,7 +4,7 @@ using System.Linq;
 
 using Hangfire.Annotations;
 
-namespace Hangfire.Dashboard.Management.v2Unofficial.Pages
+namespace Hangfire.Dashboard.Management.v2.Pages
 {
     internal class CustomSidebarMenu : RazorPage
     {
@@ -18,32 +18,89 @@ namespace Hangfire.Dashboard.Management.v2Unofficial.Pages
 
         public override void Execute()
         {
-            WriteLiteral("\r\n");
-
             if (!Items.Any()) return;
 
-            WriteLiteral("<div id=\"stats\" class=\"list-group\">\r\n");
-
+            WriteLiteral($@"
+        <ul class=""nav nav-tabs hidden-md hidden-lg"">
+");
             foreach (var item in Items)
             {
                 var itemValue = item(this);
-                WriteLiteral("<a href=\"");
-                Write(itemValue.Url);
-                WriteLiteral("\" class=\"list-group-item ");
-                Write(itemValue.Active ? "active" : null);
-                WriteLiteral("\">\r\n");
-                Write(itemValue.Text);
-                WriteLiteral("\r\n<span class=\"pull-right\">\r\n");
+                WriteLiteral($@"
+            <li role=""presentation"" class=""{(itemValue.Active ? "active" : "")}"">
+                <a href=""{itemValue.Url}"">{itemValue.Text}
+                    <span class=""pull-right"">
+");
+                    /*
+                    foreach (var metric in itemValue.GetAllMetrics())
+                    {
+                        Write(Html.InlineMetric(metric));
+                    }
+                    */
+                    WriteLiteral($@"
+                    </span>
+                </a>
+            </li>
+");
+            }
+
+          WriteLiteral($@"
+        </ul>
+");
+
+            WriteLiteral($@"
+        <ul class=""nav nav-pills nav-stacked visible-md-block visible-lg-block"">
+");
+            foreach (var item in Items)
+            {
+                var itemValue = item(this);
+                WriteLiteral($@"
+            <li role=""presentation"" class=""{(itemValue.Active ? "active" : "")}"">
+                <a href=""{itemValue.Url}"">{itemValue.Text}
+                    <span class=""pull-right"">
+");
                 /*
                 foreach (var metric in itemValue.GetAllMetrics())
                 {
                     Write(Html.InlineMetric(metric));
                 }
                 */
-                WriteLiteral("</span>\r\n</a>\r\n");
+                WriteLiteral($@"
+                    </span>
+                </a>
+            </li>
+");
             }
-            
-            WriteLiteral("</div>\r\n");
+
+            WriteLiteral($@"
+        </ul>
+");
+            //            WriteLiteral($@"
+            //        <div id=""stats"" class=""list-group"">
+            //");
+
+            //            foreach (var item in Items)
+            //            {
+            //                var itemValue = item(this);
+            //                WriteLiteral($@"
+            //            <a href=""{itemValue.Url}"" class=""list-group-item {(itemValue.Active ? "active" : "")}"">
+            //                {itemValue.Text}
+            //                <span class=""pull-right"">
+            //");
+            //                /*
+            //                foreach (var metric in itemValue.GetAllMetrics())
+            //                {
+            //                    Write(Html.InlineMetric(metric));
+            //                }
+            //                */
+            //                WriteLiteral($@"
+            //                </span>
+            //            </a>
+            //");
+            //            }
+            //            WriteLiteral($@"
+            //        </div>
+            //");
         }
     }
 }

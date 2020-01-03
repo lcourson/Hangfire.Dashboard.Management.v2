@@ -1,4 +1,4 @@
-namespace Hangfire.Dashboard.Management.v2Unofficial.Support
+namespace Hangfire.Dashboard.Management.v2.Support
 {
     public interface IJob
     {
