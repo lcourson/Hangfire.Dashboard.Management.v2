@@ -9,7 +9,7 @@
     <RepositoryUrl>https://github.com/lcourson/Hangfire.Dashboard.Management.v2</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
 		<Description />
-		<Version>2.0.1</Version>
+		<Version>2.0.3</Version>
 		<PackageTags>hangfire dashboard management</PackageTags>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
@@ -25,10 +25,6 @@
 	  <DebugType>full</DebugType>
 	  <DebugSymbols>true</DebugSymbols>
 	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Hangfire.AspNetCore" Version="1.7.7" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-	</ItemGroup>
 	<ItemGroup>
 		<None Remove=".gitignore" />
 		<None Remove="Content\cron.js" />
@@ -65,5 +61,8 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Properties\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="HangFire.Core" Version="1.7.7" />
 	</ItemGroup>
 </Project>
