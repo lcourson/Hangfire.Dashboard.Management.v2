@@ -15,7 +15,7 @@ jobs:
         dotnet-version: 3.1.100
     - name: Build with dotnet
       run: dotnet build --configuration Release
-    - name: Publish NuGet package
+    - name: Publish NuGet Package
       uses: rohith/publish-nuget@v1 
       with:
         nuget_key: ${{secrets.NUGET_API_KEY}}
