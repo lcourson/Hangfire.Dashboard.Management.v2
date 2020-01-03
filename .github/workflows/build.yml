@@ -15,7 +15,10 @@ jobs:
         dotnet-version: 3.1.100
     - name: Build with dotnet
       run: dotnet build --configuration Release
-    - name: Publish NuGet Package
-      uses: rohith/publish-nuget@v1 
-      with:
-        nuget_key: ${{secrets.NUGET_API_KEY}}
+    - name: Publish nuget
+      run: |
+           for f in ./artifacts/*.nupkg
+           do
+             curl -vX PUT -u "lcourson:${{secrets.NUGET_API_KEY}}" -F package=@$f https://nuget.pkg.github.com/lcourson/
+           done
+      shell: bash
