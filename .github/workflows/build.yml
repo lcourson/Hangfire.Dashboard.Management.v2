@@ -15,9 +15,12 @@ jobs:
         dotnet-version: 3.1.100
     - name: Build with dotnet
       run: dotnet build --configuration Release
+    - name: Pack with dotnet
+      run: dotnet pack -c Release -o out --no-build
+      shell: bash
     - name: Publish nuget
       run: |
-           for f in ./artifacts/*.nupkg
+           for f in ./out/*.nupkg
            do
              curl -vX PUT -u "lcourson:${{secrets.NUGET_API_KEY}}" -F package=@$f https://nuget.pkg.github.com/lcourson/
            done
