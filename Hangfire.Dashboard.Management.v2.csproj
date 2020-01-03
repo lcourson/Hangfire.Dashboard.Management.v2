@@ -2,9 +2,10 @@
 	<PropertyGroup>
 		<TargetFrameworks>netcoreapp2.2;net461</TargetFrameworks>
 		<IsPackable>true</IsPackable>
+		<PackageOutputPath>../artifacts</PackageOutputPath>
 		<PackageId>Hangfire.Dashboard.Management.v2</PackageId>
 		<IncludeContentInPack>true</IncludeContentInPack>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/lcourson/Hangfire.Dashboard.Management.v2</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
 		<Description />
