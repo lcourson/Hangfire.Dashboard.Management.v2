@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>netcoreapp2.2;net461</TargetFrameworks>
 		<IsPackable>true</IsPackable>
-		<PackageOutputPath>../artifacts</PackageOutputPath>
+		<PackageOutputPath>artifacts</PackageOutputPath>
 		<PackageId>Hangfire.Dashboard.Management.v2</PackageId>
 		<IncludeContentInPack>true</IncludeContentInPack>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
