@@ -5,7 +5,7 @@
 Hangfire.Dashboard.Management.v2 provides a Management page in the default dashboard that allows for manually kicking 
 off jobs or maintaining the queuing and scheduling of jobs.
 
-![management](mainInterface.PNG)
+![management](mainInterface.png)
 
 ## Features
 
@@ -84,7 +84,7 @@ public class Simple : IJob
 }
 ```
 Which generates like this...
-![Simple Implementation](SimpleImplementation.PNG)
+![Simple Implementation](SimpleImplementation.png)
 
 From this example, you can see that there is a job displayed for the function in the class.
 Each function within the class will create a new panel on the UI.
@@ -112,7 +112,7 @@ The function may be decorated with the `DisplayName` and/or `Description` attrib
 >}
 >```
 >Generates the following
->![Multiple Classes within same Menu](MultipleClassesSameMenu.PNG)
+>![Multiple Classes within same Menu](MultipleClassesSameMenu.png)
 
 ## Defining Jobs
 In the following example, we have created a new "Job" class called `Expedited` and added a method to it with the name `Job1`.
@@ -187,11 +187,11 @@ public class Expedited : IJob
 	}
 }
 ```
-![Basic Attributes for Class and Method](BasicAttributesForClassAndMethod.PNG)
+![Basic Attributes for Class and Method](BasicAttributesForClassAndMethod.png)
 
 Each input property, other than `IJobCancellationToken` and `PerformContext`, may be decorated with the `DisplayData` attribute.
 This defines the input's label, placeholder text, and description for better readability. 
-![Method Parameter Attributes](MethodParameterAttributes.PNG)
+![Method Parameter Attributes](MethodParameterAttributes.png)
 
 See the [DisplayDataAttribute.cs](/Metadata/DisplayDataAttribute.cs) for more information on these attributes.
 
