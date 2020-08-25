@@ -3,14 +3,14 @@
 ![MIT License](https://img.shields.io/badge/license-MIT-orange.svg)
 ![Build Status](https://github.com/lcourson/Hangfire.Dashboard.Management.v2/workflows/Master%20Build/badge.svg?branch=master)
 
-Hangfire.Dashboard.Management.v2 provides a Management page in the default dashboard that allows for manually kicking 
+Hangfire.Dashboard.Management.v2 provides a Management page in the default dashboard of [Hangfire](https://www.hangfire.io) that allows for manually kicking 
 off jobs or maintaining the queuing and scheduling of jobs.
 
 ![management](images/mainInterface.png)
 
 ## Features
 
- - **Automatic page and menu generation**: Simple attributes on your job classes define management pages. 
+ - **Automatic page and menu generation**: Simple attributes on your job classes to define management pages. 
  - **Automatic input generation**: Simple attributes on your properties allows for auto generation of input fields. (bool, int, text, DateTime, and Enum)
  - **Support for IJobCancellationToken and PerformContext**: These job properties are automatically ignored and set null on job creation.
  - **Simple Fire-and-Forget**: Directly from your Management dashboard you can fire any Job.
@@ -30,7 +30,7 @@ I then scoured through [mccj's](https://github.com/mccj) code for [Hangfire.Dash
 and incorporated some of their ideas into this version as well.
 
 
-## Setup
+## Setup for ASP.Net
 
 ```c#
 using Hangfire;
@@ -44,16 +44,23 @@ namespace Application
 		private IEnumerable<IDisposable> GetHangfireServers()
 		{
 			GlobalConfiguration.Configuration
-				...
-				.UseManagementPages(/*<Assembly that contains IJob classes>*/);
+				/* Specify your storage */
+				/* Here we are using Hangfire.MemoryStorage */
+				.UseMemoryStorage()
+					
+				/* Add the Management page specifying the assembly or assemblies that contain your IJob classes */
+				/* Here we are using the website's assembly */
+				.UseManagementPages(typeof(Startup).Assembly);
 
+			/* Return your Hangfire Server */
+			var options = new BackgroundJobServerOptions();
+			var queues = new List<string>();
+			queues.Add("default");
+			
 			/*
 				See note about JobsHelper.GetAllQueues()
 				under the 'Defining Jobs' section below
 			*/
-			var options = new BackgroundJobServerOptions();
-			var queues = new List<string>();
-			queues.Add("default");
 			queues.AddRange(JobsHelper.GetAllQueues());
 
 			options.Queues = queues.Distinct().ToArray();
@@ -62,8 +69,83 @@ namespace Application
 
 		public void Configuration(IAppBuilder app)
 		{
+			/* Configure Hangfire ASP.Net */
 			app.UseHangfireAspNet(GetHangfireServers);
-			app.UseHangfireDashboard();
+			
+			/* Configure that Hangfire Dashboard */
+			app.UseHangfireDashboard("/hangfire", new DashboardOptions()
+			{
+				DisplayStorageConnectionString = false,
+				DashboardTitle = "ASP.Net Hangfire Management",
+				StatsPollingInterval = 5000
+			});
+		}
+	}
+}
+```
+
+## Setup for ASP.Net Core
+
+```c#
+using Hangfire;
+using Hangfire.Dashboard.Management.v2;
+using Hangfire.Dashboard.Management.v2.Support;
+...
+namespace Application
+{
+	public class Startup
+	{
+		public Startup(IConfiguration configuration)
+		{
+			Configuration = configuration;
+		}
+
+		public IConfiguration Configuration { get; }
+
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddHangfire((configuration) =>
+			{
+				configuration
+					/* Specify your storage */
+					/* Here we are using Hangfire.MemoryStorage */
+					.UseMemoryStorage()
+					
+					/* Add the Management page specifying the assembly or assemblies that contain your IJob classes */
+					/* Here we are using the website's assembly */
+					.UseManagementPages(typeof(Startup).Assembly);
+			});
+
+			/* Add your Hangfire Server */
+			services.AddHangfireServer((options) =>
+			{
+				var queues = new List<string>();
+				queues.Add("default");
+				/*
+					See note about JobsHelper.GetAllQueues()
+					under the 'Defining Jobs' section below
+				*/
+				queues.AddRange(JobsHelper.GetAllQueues());
+
+				options.Queues = queues.Distinct().ToArray();
+			});
+
+			/* Other code */
+			//...
+		}
+
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		{
+			/* Other code */
+			//...
+
+			/* Configure that Hangfire Dashboard */
+			app.UseHangfireDashboard("/hangfire", new DashboardOptions()
+			{
+				DisplayStorageConnectionString = false,
+				DashboardTitle = "ASP.Net Core Hangfire Management",
+				StatsPollingInterval = 5000
+			});
 		}
 	}
 }
@@ -85,6 +167,7 @@ public class Simple : IJob
 }
 ```
 Which generates like this...
+
 ![Simple Implementation](images/SimpleImplementation.png)
 
 From this example, you can see that there is a job displayed for the function in the class.
@@ -113,6 +196,7 @@ The function may be decorated with the `DisplayName` and/or `Description` attrib
 >}
 >```
 >Generates the following
+>
 >![Multiple Classes within same Menu](images/MultipleClassesSameMenu.png)
 
 ## Defining Jobs
@@ -196,6 +280,9 @@ This defines the input's label, placeholder text, and description for better rea
 
 See the [DisplayDataAttribute.cs](/src/Metadata/DisplayDataAttribute.cs) for more information on these attributes.
 
+
+## Runnable Examples
+I have included two web applications, ASP.Net and ASP.Net Core, that give you an example of how to configure and create Menu Items as well as Jobs.  These can be found in the [examples](/examples) folder.
 
 ## Caution
 As with the other projects this one is based on, I have not done extensive testing.
