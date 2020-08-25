@@ -2,8 +2,8 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/obj
-/bin
-/.vs
-/packages
-/artifacts
+/src/obj
+/src/bin
+**/.vs
+/src/packages
+/src/artifacts
