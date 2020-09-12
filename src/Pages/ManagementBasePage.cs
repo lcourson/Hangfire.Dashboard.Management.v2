@@ -406,6 +406,10 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 				{
 					displayInfo = parameterInfo.GetCustomAttribute<DisplayDataAttribute>();
 				}
+				else
+                {
+					displayInfo = new DisplayDataAttribute();
+                }
 
 				var labelText = displayInfo?.Label ?? parameterInfo.Name;
 				var placeholderText = displayInfo?.Placeholder ?? parameterInfo.Name;
@@ -413,23 +417,23 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 
 				if (parameterInfo.ParameterType == typeof(string))
 				{
-					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo?.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
 				}
 				else if (parameterInfo.ParameterType == typeof(int))
 				{
-					inputs += InputNumberbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo?.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+					inputs += InputNumberbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
 				}
 				else if (parameterInfo.ParameterType == typeof(Uri))
 				{
-					inputs += Input(myId, displayInfo.CssClasses, labelText, displayInfo?.Placeholder ?? labelText, displayInfo?.Description, "url", displayInfo.DefaultValue, displayInfo.IsDisabled);
+					inputs += Input(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, "url", displayInfo.DefaultValue, displayInfo.IsDisabled);
 				}
 				else if (parameterInfo.ParameterType == typeof(DateTime))
 				{
-					inputs += InputDatebox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo?.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+					inputs += InputDatebox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
 				}
 				else if (parameterInfo.ParameterType == typeof(bool))
 				{
-					inputs += "<br/>" + InputCheckbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo?.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+					inputs += "<br/>" + InputCheckbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
 				}
 				else if (parameterInfo.ParameterType.IsEnum)
 				{
@@ -438,11 +442,11 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 					{
 						data.Add(Enum.GetName(parameterInfo.ParameterType, v), v.ToString());
 					}
-					inputs += InputDataList(myId, displayInfo.CssClasses, labelText, displayInfo?.Placeholder ?? labelText, displayInfo?.Description, data, displayInfo.DefaultValue?.ToString(), displayInfo.IsDisabled);
+					inputs += InputDataList(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, data, displayInfo.DefaultValue?.ToString(), displayInfo.IsDisabled);
 				}
 				else
 				{
-					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo?.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
 				}
 			}
 
