@@ -198,6 +198,8 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 							}
 					}
 
+					context.Response.ContentType = "application/json";
+
 					if (!string.IsNullOrEmpty(jobLink))
 					{
 						context.Response.StatusCode = (int)HttpStatusCode.OK;

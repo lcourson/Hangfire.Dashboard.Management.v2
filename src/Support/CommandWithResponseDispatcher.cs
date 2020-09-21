@@ -21,16 +21,8 @@ namespace Hangfire.Dashboard.Management.v2.Support
                 response.StatusCode = 405;
                 return (Task)Task.FromResult<bool>(false);
             }
-            if (this._command(context))
-            {
-                response.StatusCode = 200;
-                response.ContentType = "application/json";
-            }
-            else
-            {
-                response.StatusCode = 422;
-            }
-            
+
+            this._command(context);
             return (Task)Task.FromResult<bool>(true);
         }
     }
