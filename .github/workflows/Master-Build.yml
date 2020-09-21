@@ -18,7 +18,7 @@ jobs:
         dotnet-version: 3.1.100
 
     - name: Build with dotnet
-      run: dotnet build src\Hangfire.Dashboard.Management.v2.sln --configuration Release
+      run: dotnet build Hangfire.Dashboard.Management.v2.sln --configuration Release
 
     - name: Publish nuget
       run: dotnet nuget push **/*.nupkg
