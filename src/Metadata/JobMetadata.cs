@@ -11,6 +11,7 @@ namespace Hangfire.Dashboard.Management.v2.Metadata
         public string DisplayName { get; set; }
         public string Description { get; set; }
         public string MenuName { get; set; }
+        public bool AllowMultiple { get; set; }
 
         public string Queue { get; set; }
         public Type Type { get; set; }

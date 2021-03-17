@@ -45,6 +45,10 @@ namespace Hangfire.Dashboard.Management.v2.Support
 						meta.DisplayName = methodInfo.GetCustomAttribute<DisplayNameAttribute>().DisplayName;
 					}
 
+					if(methodInfo.GetCustomAttributes(true).OfType<AllowMultipleAttribute>().Any()) {
+						meta.AllowMultiple = methodInfo.GetCustomAttribute<AllowMultipleAttribute>().AllowMultiple;
+					}
+
 					Metadata.Add(meta);
 				}
 			}

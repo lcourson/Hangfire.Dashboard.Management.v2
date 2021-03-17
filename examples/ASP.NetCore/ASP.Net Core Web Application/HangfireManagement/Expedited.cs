@@ -15,6 +15,7 @@ namespace ASP.Net_Core_Web_Application.HangfireManagement
 		[DisplayName("Job Number 1")] //C
 		[Description("This is the description for Job Number 1")] //D
 		[Queue("expedited")]
+		[AllowMultiple]
 		public void Job1(PerformContext context, IJobCancellationToken token,
 			[DisplayData(
 			Label = "String Input 1",
