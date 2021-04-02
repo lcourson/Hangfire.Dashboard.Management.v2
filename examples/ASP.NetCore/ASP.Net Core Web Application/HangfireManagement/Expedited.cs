@@ -26,7 +26,8 @@ namespace ASP.Net_Core_Web_Application.HangfireManagement
 
 			[DisplayData(
 			Placeholder = "This is the placeholder text",
-			Description = "This is the description text for the string input without a default value and the control is enabled"
+			Description = "This is the description text for the string input without a default value and the control is enabled",
+			IsRequired = true
 		)]
 		string strInput2,
 

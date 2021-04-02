@@ -42,6 +42,12 @@
             font-family: monospace;
         }
 
+/* Asterisk after the label text for required inputs*/
+.form-group.required .control-label:after {
+    content: " *";
+    color: red;
+}
+
 @media (min-width:992px) {
     .mgmt-title {
         margin-top: 0px;
