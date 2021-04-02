@@ -37,6 +37,8 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 				var route = $"{ManagementPage.UrlRoute}/{jobMetadata.JobId.ScrubURL()}";
 
 				DashboardRoutes.Routes.Add(route, new CommandWithResponseDispatcher(context => {
+					string errorMessage = null;
+					string jobLink = null;
 					var par = new List<object>();
 					string GetFormVariable(string key)
 					{
@@ -53,6 +55,16 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 							continue;
 						}
 
+						DisplayDataAttribute displayInfo = null;
+						if (parameterInfo.GetCustomAttributes(true).OfType<DisplayDataAttribute>().Any())
+						{
+							displayInfo = parameterInfo.GetCustomAttribute<DisplayDataAttribute>();
+						}
+						else
+						{
+							displayInfo = new DisplayDataAttribute();
+						}
+
 						var variable = $"{id}_{parameterInfo.Name}";
 						if (parameterInfo.ParameterType == typeof(DateTime))
 						{
@@ -66,14 +78,29 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 						if (parameterInfo.ParameterType == typeof(string))
 						{
 							item = formInput;
+							if (displayInfo.IsRequired && string.IsNullOrWhiteSpace((string)item))
+							{
+								errorMessage = $"{parameterInfo.Name} is required.";
+								break;
+							}
 						}
 						else if (parameterInfo.ParameterType == typeof(int))
 						{
 							if (formInput != null) item = int.Parse(formInput);
+							if (displayInfo.IsRequired && string.IsNullOrWhiteSpace((string)item))
+							{
+								errorMessage = $"{parameterInfo.Name} is required.";
+								break;
+							}
 						}
 						else if (parameterInfo.ParameterType == typeof(DateTime))
 						{
 							item = formInput == null ? DateTime.MinValue : DateTime.Parse(formInput);
+							if (displayInfo.IsRequired && item.Equals(DateTime.MinValue))
+							{
+								errorMessage = $"{parameterInfo.Name} is required.";
+								break;
+							}
 						}
 						else if (parameterInfo.ParameterType == typeof(bool))
 						{
@@ -84,6 +111,11 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 							if (formInput == null || formInput.Length == 0)
 							{
 								item = null;
+								if (displayInfo.IsRequired)
+								{
+									errorMessage = $"{parameterInfo.Name} is required.";
+									break;
+								}
 							}
 							else
 							{
@@ -98,110 +130,111 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 						par.Add(item);
 					}
 
-					var job = new Job(jobMetadata.Type, jobMetadata.MethodInfo, par.ToArray());
-					string errorMessage = null;
-					var client = new BackgroundJobClient(context.Storage);
-					string jobLink = null;
-					switch (type)
+					if (errorMessage == null)
 					{
-						case "CronExpression":
-							{
-								var manager = new RecurringJobManager(context.Storage);
-								var schedule = GetFormVariable($"{id}_schedule");
-								var cron = GetFormVariable($"{id}_sys_cron");
-								var name = GetFormVariable($"{id}_sys_name");
-
-								if (string.IsNullOrWhiteSpace(schedule ?? cron))
+						var job = new Job(jobMetadata.Type, jobMetadata.MethodInfo, par.ToArray());
+						var client = new BackgroundJobClient(context.Storage);
+						switch (type)
+						{
+							case "CronExpression":
 								{
-									errorMessage = "No Cron Expression Defined";
+									var manager = new RecurringJobManager(context.Storage);
+									var schedule = GetFormVariable($"{id}_schedule");
+									var cron = GetFormVariable($"{id}_sys_cron");
+									var name = GetFormVariable($"{id}_sys_name");
+
+									if (string.IsNullOrWhiteSpace(schedule ?? cron))
+									{
+										errorMessage = "No Cron Expression Defined";
+										break;
+									}
+									if (jobMetadata.AllowMultiple && string.IsNullOrWhiteSpace(name))
+									{
+										errorMessage = "No Job Name Defined";
+										break;
+									}
+
+									try
+									{
+										var jobId = jobMetadata.AllowMultiple ? name : jobMetadata.JobId;
+										manager.AddOrUpdate(jobId, job, schedule ?? cron, TimeZoneInfo.Local, jobMetadata.Queue);
+										jobLink = new UrlHelper(context).To("/recurring");
+									}
+									catch (Exception e)
+									{
+										errorMessage = e.Message;
+									}
 									break;
 								}
-								if (jobMetadata.AllowMultiple && string.IsNullOrWhiteSpace(name))
+							case "ScheduleDateTime":
 								{
-									errorMessage = "No Job Name Defined";
+									var datetime = GetFormVariable($"{id}_sys_datetime");
+
+									if (string.IsNullOrWhiteSpace(datetime))
+									{
+										errorMessage = "No Schedule Defined";
+										break;
+									}
+
+									if (!DateTime.TryParse(datetime, out DateTime dt))
+									{
+										errorMessage = "Unable to parse Schedule";
+										break;
+									}
+									try
+									{
+										var jobId = client.Create(job, new ScheduledState(dt.ToLocalTime()));//Queue
+										jobLink = new UrlHelper(context).JobDetails(jobId);
+									}
+									catch (Exception e)
+									{
+										errorMessage = e.Message;
+									}
 									break;
 								}
+							case "ScheduleTimeSpan":
+								{
+									var schedule = GetFormVariable("schedule");
+									var timeSpan = GetFormVariable($"{id}_sys_timespan");
 
-								try
-								{
-									var jobId = jobMetadata.AllowMultiple ? name : jobMetadata.JobId;
-									manager.AddOrUpdate(jobId, job, schedule ?? cron, TimeZoneInfo.Local, jobMetadata.Queue);
-									jobLink = new UrlHelper(context).To("/recurring");
-								}
-								catch (Exception e)
-								{
-									errorMessage = e.Message;
-								}
-								break;
-							}
-						case "ScheduleDateTime":
-							{
-								var datetime = GetFormVariable($"{id}_sys_datetime");
+									if (string.IsNullOrWhiteSpace(schedule ?? timeSpan))
+									{
+										errorMessage = "No Delay Defined";
+										break;
+									}
 
-								if (string.IsNullOrWhiteSpace(datetime))
-								{
-									errorMessage = "No Schedule Defined";
+									if (!DateTime.TryParse(schedule ?? timeSpan, out DateTime dt))
+									{
+										errorMessage = "Unable to parse Delay";
+										break;
+									}
+
+									try
+									{
+										var jobId = client.Create(job, new ScheduledState(dt));//Queue
+										jobLink = new UrlHelper(context).JobDetails(jobId);
+									}
+									catch (Exception e)
+									{
+										errorMessage = e.Message;
+									}
 									break;
 								}
-
-								if (!DateTime.TryParse(datetime, out DateTime dt))
+							case "Enqueue":
+							default:
 								{
-									errorMessage = "Unable to parse Schedule";
+									try
+									{
+										var jobId = client.Create(job, new EnqueuedState(jobMetadata.Queue));
+										jobLink = new UrlHelper(context).JobDetails(jobId);
+									}
+									catch (Exception e)
+									{
+										errorMessage = e.Message;
+									}
 									break;
 								}
-								try
-								{
-									var jobId = client.Create(job, new ScheduledState(dt.ToLocalTime()));//Queue
-									jobLink = new UrlHelper(context).JobDetails(jobId);
-								}
-								catch (Exception e)
-								{
-									errorMessage = e.Message;
-								}
-								break;
-							}
-						case "ScheduleTimeSpan":
-							{
-								var schedule = GetFormVariable("schedule");
-								var timeSpan = GetFormVariable($"{id}_sys_timespan");
-
-								if (string.IsNullOrWhiteSpace(schedule ?? timeSpan))
-								{
-									errorMessage = "No Delay Defined";
-									break;
-								}
-
-								if (!DateTime.TryParse(schedule ?? timeSpan, out DateTime dt))
-								{
-									errorMessage = "Unable to parse Delay";
-									break;
-								}
-
-								try
-								{
-									var jobId = client.Create(job, new ScheduledState(dt));//Queue
-									jobLink = new UrlHelper(context).JobDetails(jobId);
-								}
-								catch (Exception e)
-								{
-									errorMessage = e.Message;
-								}
-								break;
-							}
-						case "Enqueue":
-						default:
-							{
-								try
-								{
-									var jobId = client.Create(job, new EnqueuedState(jobMetadata.Queue));
-									jobLink = new UrlHelper(context).JobDetails(jobId);
-								}
-								catch (Exception e)
-								{
-									errorMessage = e.Message;
-								}
-								break;
-							}
+						}
 					}
 
 					context.Response.ContentType = "application/json";
@@ -425,19 +458,19 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 
 				if (parameterInfo.ParameterType == typeof(string))
 				{
-					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled, displayInfo.IsRequired);
 				}
 				else if (parameterInfo.ParameterType == typeof(int))
 				{
-					inputs += InputNumberbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+					inputs += InputNumberbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled, displayInfo.IsRequired);
 				}
 				else if (parameterInfo.ParameterType == typeof(Uri))
 				{
-					inputs += Input(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, "url", displayInfo.DefaultValue, displayInfo.IsDisabled);
+					inputs += Input(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, "url", displayInfo.DefaultValue, displayInfo.IsDisabled, displayInfo.IsRequired);
 				}
 				else if (parameterInfo.ParameterType == typeof(DateTime))
 				{
-					inputs += InputDatebox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+					inputs += InputDatebox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled, displayInfo.IsRequired);
 				}
 				else if (parameterInfo.ParameterType == typeof(bool))
 				{
@@ -454,7 +487,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 				}
 				else
 				{
-					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled, displayInfo.IsRequired);
 				}
 			}
 
@@ -603,37 +636,37 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 ");
 		}
 
-		protected string Input(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, string inputtype, object defaultValue = null, bool isDisabled = false)
+		protected string Input(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, string inputtype, object defaultValue = null, bool isDisabled = false, bool isRequired = false)
 		{
 			return $@"
-<div class=""form-group {cssClasses}"">
+<div class=""form-group {cssClasses} {(isRequired ? "required" : "")}"">
 		<label for=""{id}"" class=""control-label"">{labelText}</label>
 		{(inputtype != "textarea" ? $@"
-		<input class=""form-control"" type=""{inputtype}"" placeholder=""{placeholderText}"" id=""{id}"" value=""{defaultValue}"" {(isDisabled ? "disabled='disabled'" : "")} />" : $@"
-		<textarea rows=""10"" class=""form-control"" placeholder=""{placeholderText}"" id=""{id}"" {(isDisabled ? "disabled='disabled'" : "")}>{defaultValue}</textarea>")}
+		<input class=""form-control"" type=""{inputtype}"" placeholder=""{placeholderText}"" id=""{id}"" value=""{defaultValue}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")} />" : $@"
+		<textarea rows=""10"" class=""form-control"" placeholder=""{placeholderText}"" id=""{id}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")}>{defaultValue}</textarea>")}
 		{(!string.IsNullOrWhiteSpace(descriptionText) ? $@"
 		<small id=""{id}Help"" class=""form-text text-muted"">{descriptionText}</small>
 " : "")}
 	</div>";
 		}
 
-		protected string InputTextbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false)
+		protected string InputTextbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false, bool isRequired = false)
 		{
-			return Input(id, cssClasses, labelText, placeholderText, descriptionText, "text", defaultValue, isDisabled);
+			return Input(id, cssClasses, labelText, placeholderText, descriptionText, "text", defaultValue, isDisabled, isRequired);
 		}
 
-		protected string InputNumberbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false)
+		protected string InputNumberbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false, bool isRequired = false)
 		{
-			return Input(id, cssClasses, labelText, placeholderText, descriptionText, "number", defaultValue, isDisabled);
+			return Input(id, cssClasses, labelText, placeholderText, descriptionText, "number", defaultValue, isDisabled, isRequired);
 		}
 
-		protected string InputDatebox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false)
+		protected string InputDatebox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false, bool isRequired = false)
 		{
 			return $@"
-<div class=""form-group {cssClasses}"">
+<div class=""form-group {cssClasses} {(isRequired ? "required" : "")}"">
 	<label for=""{id}"" class=""control-label"">{labelText}</label>
 	<div class='input-group date' id='{id}_datetimepicker'>
-		<input type='text' class=""form-control"" placeholder=""{placeholderText}"" value=""{defaultValue}"" {(isDisabled ? "disabled='disabled'" : "")} />
+		<input type='text' class=""form-control"" placeholder=""{placeholderText}"" value=""{defaultValue}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")} />
 		<span class=""input-group-addon"">
 			<span class=""glyphicon glyphicon-calendar""></span>
 		</span>

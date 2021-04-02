@@ -1,75 +1,81 @@
-.mgmt-title{
-    margin-top: .25em;
+﻿.mgmt-title {
+	margin-top: .25em;
 }
 
 .job-panels .wrapper-panel > .panel-collapse {
-    margin-left: 1em;
-    margin-right: 1em;
+	margin-left: 1em;
+	margin-right: 1em;
 }
 
 .input-control-data-list {
-    width: 100%;
-    text-align: right;
+	width: 100%;
+	text-align: right;
 }
 
 .panel-footer {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
 }
 
-    .panel-footer .commands-options,
-    .panel-footer .commands-panel,
-    .panel-footer > .btn-group {
-        padding: 0;
-    }
+	.panel-footer .commands-options,
+	.panel-footer .commands-panel,
+	.panel-footer > .btn-group {
+		padding: 0;
+	}
 
-        .panel-footer .commands-panel .btn-group,
-        .panel-footer .commands-panel button {
-            height: 100%;
-        }
+		.panel-footer .commands-panel .btn-group,
+		.panel-footer .commands-panel button {
+			height: 100%;
+		}
 
-        .panel-footer .commands-panel > .btn-group,
-        .panel-footer .commands-panel > button {
-            float: left;
-        }
+		.panel-footer .commands-panel > .btn-group,
+		.panel-footer .commands-panel > button {
+			float: left;
+		}
 
-        .panel-footer .commands-panel.CronExpression ul {
-            width: 225px;
-        }
+		.panel-footer .commands-panel.CronExpression ul {
+			width: 225px;
+		}
 
-        .panel-footer .commands-panel.CronExpression li > a > span {
-            font-family: monospace;
-        }
+		.panel-footer .commands-panel.CronExpression li > a > span {
+			font-family: monospace;
+		}
+
+/* Asterisk after the label text for required inputs*/
+.form-group.required .control-label:after {
+	content: " *";
+	color: red;
+}
 
 @media (min-width:992px) {
-    .mgmt-title {
-        margin-top: 0px;
-    }
+	.mgmt-title {
+		margin-top: 0px;
+	}
 }
 
 @media (min-width:768px) {
-    .job-panels > .single-section {
-        margin-top: .25em;
-    }
+	.job-panels > .single-section {
+		margin-top: .25em;
+	}
 
-    .panel-footer {
-        flex-wrap: nowrap;
-    }
+	.panel-footer {
+		flex-wrap: nowrap;
+	}
 
-        .panel-footer .commands-options,
-        .panel-footer .commands-panel {
-            padding: 0 0 0 1em;
-        }
+		.panel-footer .commands-options,
+		.panel-footer .commands-panel {
+			padding: 0 0 0 1em;
+		}
 
-            .panel-footer .commands-panel > .btn-group,
-            .panel-footer .commands-panel > button {
-                float: right;
-            }
+			.panel-footer .commands-panel > .btn-group,
+			.panel-footer .commands-panel > button {
+				float: right;
+			}
 }
 
 @media (min-width:768px) and (max-width:992px) {
-    body {
-        padding-top: 110px !important;
-    }
+	body {
+		padding-top: 110px !important;
+	}
 }

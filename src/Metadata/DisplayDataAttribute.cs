@@ -45,8 +45,13 @@ namespace Hangfire.Dashboard.Management.v2.Metadata
 		/// </summary>
 		public bool IsDisabled { get; set; } = false;
 
+		/// <summary>
+		/// Should the input control be required on the interface?
+		/// </summary>
+		public bool IsRequired { get; set; } = false;
+
 		public DisplayDataAttribute() { }
-		public DisplayDataAttribute(string label = null, string placeholder = null, string description = null, object defaultValue = null, string cssClasses = null, bool isDisabled = false)
+		public DisplayDataAttribute(string label = null, string placeholder = null, string description = null, object defaultValue = null, string cssClasses = null, bool isDisabled = false, bool isRequired = false)
 		{
 			this.Label = label;
 			this.Placeholder = placeholder;
@@ -54,6 +59,7 @@ namespace Hangfire.Dashboard.Management.v2.Metadata
 			this.DefaultValue = defaultValue;
 			this.CssClasses = cssClasses;
 			this.IsDisabled = isDisabled;
+			this.IsRequired = IsRequired;
 		}
 	}
 }
