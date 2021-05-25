@@ -8,3 +8,4 @@
 **/packages
 /src/artifacts
 *.user
+**/PublishProfiles

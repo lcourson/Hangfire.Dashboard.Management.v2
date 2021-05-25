@@ -17,234 +17,233 @@ using Newtonsoft.Json.Linq;
 
 namespace Hangfire.Dashboard.Management.v2.Pages
 {
-    public class ManagementBasePage : RazorPage
-    {
-        private readonly string menuName;
+	public class ManagementBasePage : RazorPage
+	{
+		private readonly string menuName;
 
 
-        protected internal ManagementBasePage(string menuName)
-        {
-            this.menuName = menuName;
-        }
+		protected internal ManagementBasePage(string menuName)
+		{
+			this.menuName = menuName;
+		}
 
-        public static void AddCommands(string menuName)
-        {
-            var jobs = JobsHelper.Metadata.Where(j => j.MenuName.Contains(menuName));
+		public static void AddCommands(string menuName)
+		{
+			var jobs = JobsHelper.Metadata.Where(j => j.MenuName.Contains(menuName));
 
-            foreach (var jobMetadata in jobs)
-            {
+			foreach (var jobMetadata in jobs)
+			{
 
-                var route = $"{ManagementPage.UrlRoute}/{jobMetadata.JobId.ScrubURL()}";
+				var route = $"{ManagementPage.UrlRoute}/{jobMetadata.JobId.ScrubURL()}";
 
-                DashboardRoutes.Routes.Add(route, new CommandWithResponseDispatcher(context =>
-                {
-                    var par = new List<object>();
-                    string GetFormVariable(string key)
-                    {
-                        return Task.Run(() => context.Request.GetFormValuesAsync(key)).Result.FirstOrDefault();
-                    }
-                    var id = GetFormVariable("id");
-                    var type = GetFormVariable("type");
+				DashboardRoutes.Routes.Add(route, new CommandWithResponseDispatcher(context => {
+					var par = new List<object>();
+					string GetFormVariable(string key)
+					{
+						return Task.Run(() => context.Request.GetFormValuesAsync(key)).Result.FirstOrDefault();
+					}
+					var id = GetFormVariable("id");
+					var type = GetFormVariable("type");
 
-                    foreach (var parameterInfo in jobMetadata.MethodInfo.GetParameters())
-                    {
-                        if (parameterInfo.ParameterType == typeof(PerformContext) || parameterInfo.ParameterType == typeof(IJobCancellationToken))
-                        {
-                            par.Add(null);
-                            continue;
-                        }
+					foreach (var parameterInfo in jobMetadata.MethodInfo.GetParameters())
+					{
+						if (parameterInfo.ParameterType == typeof(PerformContext) || parameterInfo.ParameterType == typeof(IJobCancellationToken))
+						{
+							par.Add(null);
+							continue;
+						}
 
-                        var variable = $"{id}_{parameterInfo.Name}";
-                        if (parameterInfo.ParameterType == typeof(DateTime))
-                        {
-                            variable = $"{variable}_datetimepicker";
-                        }
+						var variable = $"{id}_{parameterInfo.Name}";
+						if (parameterInfo.ParameterType == typeof(DateTime))
+						{
+							variable = $"{variable}_datetimepicker";
+						}
 
-                        variable = variable.Trim('_');
-                        var formInput = GetFormVariable(variable);
+						variable = variable.Trim('_');
+						var formInput = GetFormVariable(variable);
 
-                        object item = null;
-                        if (parameterInfo.ParameterType == typeof(string))
-                        {
-                            item = formInput;
-                        }
-                        else if (parameterInfo.ParameterType == typeof(int))
-                        {
-                            if (formInput != null) item = int.Parse(formInput);
-                        }
-                        else if (parameterInfo.ParameterType == typeof(DateTime))
-                        {
-                            item = formInput == null ? DateTime.MinValue : DateTime.Parse(formInput);
-                        }
-                        else if (parameterInfo.ParameterType == typeof(bool))
-                        {
-                            item = formInput == "on";
-                        }
-                        else if (!parameterInfo.ParameterType.IsValueType)
-                        {
-                            if (formInput == null || formInput.Length == 0)
-                            {
-                                item = null;
-                            }
-                            else
-                            {
-                                item = JsonConvert.DeserializeObject(formInput, parameterInfo.ParameterType);
-                            }
-                        }
-                        else
-                        {
-                            item = formInput;
-                        }
+						object item = null;
+						if (parameterInfo.ParameterType == typeof(string))
+						{
+							item = formInput;
+						}
+						else if (parameterInfo.ParameterType == typeof(int))
+						{
+							if (formInput != null) item = int.Parse(formInput);
+						}
+						else if (parameterInfo.ParameterType == typeof(DateTime))
+						{
+							item = formInput == null ? DateTime.MinValue : DateTime.Parse(formInput);
+						}
+						else if (parameterInfo.ParameterType == typeof(bool))
+						{
+							item = formInput == "on";
+						}
+						else if (!parameterInfo.ParameterType.IsValueType)
+						{
+							if (formInput == null || formInput.Length == 0)
+							{
+								item = null;
+							}
+							else
+							{
+								item = JsonConvert.DeserializeObject(formInput, parameterInfo.ParameterType);
+							}
+						}
+						else
+						{
+							item = formInput;
+						}
 
-                        par.Add(item);
-                    }
+						par.Add(item);
+					}
 
-                    var job = new Job(jobMetadata.Type, jobMetadata.MethodInfo, par.ToArray());
-                    string errorMessage = null;
-                    var client = new BackgroundJobClient(context.Storage);
-                    string jobLink = null;
-                    switch (type)
-                    {
-                        case "CronExpression":
-                            {
-                                var manager = new RecurringJobManager(context.Storage);
-                                var schedule = GetFormVariable($"{id}_schedule");
-                                var cron = GetFormVariable($"{id}_sys_cron");
-                                var name = GetFormVariable($"{id}_sys_name");
+					var job = new Job(jobMetadata.Type, jobMetadata.MethodInfo, par.ToArray());
+					string errorMessage = null;
+					var client = new BackgroundJobClient(context.Storage);
+					string jobLink = null;
+					switch (type)
+					{
+						case "CronExpression":
+							{
+								var manager = new RecurringJobManager(context.Storage);
+								var schedule = GetFormVariable($"{id}_schedule");
+								var cron = GetFormVariable($"{id}_sys_cron");
+								var name = GetFormVariable($"{id}_sys_name");
 
-                                if (string.IsNullOrWhiteSpace(schedule ?? cron))
-                                {
-                                    errorMessage = "No Cron Expression Defined";
-                                    break;
-                                }
-                                if(jobMetadata.AllowMultiple && string.IsNullOrWhiteSpace(name))
-                                {
-                                    errorMessage = "No Job Name Defined";
-                                    break;
-                                }
+								if (string.IsNullOrWhiteSpace(schedule ?? cron))
+								{
+									errorMessage = "No Cron Expression Defined";
+									break;
+								}
+								if (jobMetadata.AllowMultiple && string.IsNullOrWhiteSpace(name))
+								{
+									errorMessage = "No Job Name Defined";
+									break;
+								}
 
-                                try
-                                {
-                                    var jobId = jobMetadata.AllowMultiple ? name : jobMetadata.JobId;
-                                    manager.AddOrUpdate(jobId, job, schedule ?? cron, TimeZoneInfo.Local, jobMetadata.Queue);
-                                    jobLink = new UrlHelper(context).To("/recurring");
-                                }
-                                catch (Exception e)
-                                {
-                                    errorMessage = e.Message;
-                                }
-                                break;
-                            }
-                        case "ScheduleDateTime":
-                            {
-                                var datetime = GetFormVariable($"{id}_sys_datetime");
+								try
+								{
+									var jobId = jobMetadata.AllowMultiple ? name : jobMetadata.JobId;
+									manager.AddOrUpdate(jobId, job, schedule ?? cron, TimeZoneInfo.Local, jobMetadata.Queue);
+									jobLink = new UrlHelper(context).To("/recurring");
+								}
+								catch (Exception e)
+								{
+									errorMessage = e.Message;
+								}
+								break;
+							}
+						case "ScheduleDateTime":
+							{
+								var datetime = GetFormVariable($"{id}_sys_datetime");
 
-                                if (string.IsNullOrWhiteSpace(datetime))
-                                {
-                                    errorMessage = "No Schedule Defined";
-                                    break;
-                                }
+								if (string.IsNullOrWhiteSpace(datetime))
+								{
+									errorMessage = "No Schedule Defined";
+									break;
+								}
 
-                                if (!DateTime.TryParse(datetime, out DateTime dt))
-                                {
-                                    errorMessage = "Unable to parse Schedule";
-                                    break;
-                                }
-                                try
-                                {
-                                    var jobId = client.Create(job, new ScheduledState(dt.ToLocalTime()));//Queue
-                                    jobLink = new UrlHelper(context).JobDetails(jobId);
-                                }
-                                catch (Exception e)
-                                {
-                                    errorMessage = e.Message;
-                                }
-                                break;
-                            }
-                        case "ScheduleTimeSpan":
-                            {
-                                var schedule = GetFormVariable("schedule");
-                                var timeSpan = GetFormVariable($"{id}_sys_timespan");
+								if (!DateTime.TryParse(datetime, out DateTime dt))
+								{
+									errorMessage = "Unable to parse Schedule";
+									break;
+								}
+								try
+								{
+									var jobId = client.Create(job, new ScheduledState(dt.ToLocalTime()));//Queue
+									jobLink = new UrlHelper(context).JobDetails(jobId);
+								}
+								catch (Exception e)
+								{
+									errorMessage = e.Message;
+								}
+								break;
+							}
+						case "ScheduleTimeSpan":
+							{
+								var schedule = GetFormVariable("schedule");
+								var timeSpan = GetFormVariable($"{id}_sys_timespan");
 
-                                if (string.IsNullOrWhiteSpace(schedule ?? timeSpan))
-                                {
-                                    errorMessage = "No Delay Defined";
-                                    break;
-                                }
+								if (string.IsNullOrWhiteSpace(schedule ?? timeSpan))
+								{
+									errorMessage = "No Delay Defined";
+									break;
+								}
 
-                                if (!DateTime.TryParse(schedule ?? timeSpan, out DateTime dt))
-                                {
-                                    errorMessage = "Unable to parse Delay";
-                                    break;
-                                }
+								if (!DateTime.TryParse(schedule ?? timeSpan, out DateTime dt))
+								{
+									errorMessage = "Unable to parse Delay";
+									break;
+								}
 
-                                try
-                                {
-                                    var jobId = client.Create(job, new ScheduledState(dt));//Queue
-                                    jobLink = new UrlHelper(context).JobDetails(jobId);
-                                }
-                                catch (Exception e)
-                                {
-                                    errorMessage = e.Message;
-                                }
-                                break;
-                            }
-                        case "Enqueue":
-                        default:
-                            {
-                                try
-                                {
-                                    var jobId = client.Create(job, new EnqueuedState(jobMetadata.Queue));
-                                    jobLink = new UrlHelper(context).JobDetails(jobId);
-                                }
-                                catch (Exception e)
-                                {
-                                    errorMessage = e.Message;
-                                }
-                                break;
-                            }
-                    }
+								try
+								{
+									var jobId = client.Create(job, new ScheduledState(dt));//Queue
+									jobLink = new UrlHelper(context).JobDetails(jobId);
+								}
+								catch (Exception e)
+								{
+									errorMessage = e.Message;
+								}
+								break;
+							}
+						case "Enqueue":
+						default:
+							{
+								try
+								{
+									var jobId = client.Create(job, new EnqueuedState(jobMetadata.Queue));
+									jobLink = new UrlHelper(context).JobDetails(jobId);
+								}
+								catch (Exception e)
+								{
+									errorMessage = e.Message;
+								}
+								break;
+							}
+					}
 
-                    context.Response.ContentType = "application/json";
+					context.Response.ContentType = "application/json";
 
-                    if (!string.IsNullOrEmpty(jobLink))
-                    {
-                        context.Response.StatusCode = (int)HttpStatusCode.OK;
-                        context.Response.WriteAsync(JsonConvert.SerializeObject(new { jobLink }));
-                        return true;
-                    }
+					if (!string.IsNullOrEmpty(jobLink))
+					{
+						context.Response.StatusCode = (int)HttpStatusCode.OK;
+						context.Response.WriteAsync(JsonConvert.SerializeObject(new { jobLink }));
+						return true;
+					}
 
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    context.Response.WriteAsync(JsonConvert.SerializeObject(new { errorMessage }));
-                    return false;
-                }));
-            }
-        }
+					context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+					context.Response.WriteAsync(JsonConvert.SerializeObject(new { errorMessage }));
+					return false;
+				}));
+			}
+		}
 
-        public override void Execute()
-        {
-            Layout = new LayoutPage(menuName);
-            WriteLiteral($@"
+		public override void Execute()
+		{
+			Layout = new LayoutPage(menuName);
+			WriteLiteral($@"
 <div class=""row"">
 	<div class=""col-md-3"">
 ");
-            Write(Html.RenderPartial(new CustomSidebarMenu(ManagementSidebarMenu.Items)));
-            WriteLiteral($@"
+			Write(Html.RenderPartial(new CustomSidebarMenu(ManagementSidebarMenu.Items)));
+			WriteLiteral($@"
 	</div>
 	<div class=""col-md-9 accordion job-panels"">
 ");
 
-            var jobs = JobsHelper.Metadata.Where(j => j.MenuName.Contains(menuName)).OrderBy(x => x.SectionTitle).ThenBy(x => x.Name);
-            var taskSections = jobs.Select(j => j.SectionTitle).Distinct().ToDictionary(k => k, v => string.Empty);
+			var jobs = JobsHelper.Metadata.Where(j => j.MenuName.Contains(menuName)).OrderBy(x => x.SectionTitle).ThenBy(x => x.Name);
+			var taskSections = jobs.Select(j => j.SectionTitle).Distinct().ToDictionary(k => k, v => string.Empty);
 
-            foreach (var section in taskSections.Keys)
-            {
-                var scrubbedSection = section.ScrubURL();
-                var expanded = taskSections.Keys.First() == section;
+			foreach (var section in taskSections.Keys)
+			{
+				var scrubbedSection = section.ScrubURL();
+				var expanded = taskSections.Keys.First() == section;
 
-                if (taskSections.Count > 1)
-                {
-                    WriteLiteral($@"
+				if (taskSections.Count > 1)
+				{
+					WriteLiteral($@"
 		<div class=""panel panel-info card wrapper-panel"" data-id=""section_{scrubbedSection}"">
 			<div id=""section_heading_{scrubbedSection}"" class=""panel-heading card-header {(expanded ? "" : "collapsed")}collapsed"" role=""button"" data-toggle=""collapse"" data-parent=""#accordion"" href=""#section_collapse_{scrubbedSection}"" aria-expanded=""{(expanded ? "true" : "false")}"" aria-controls=""section_collapse_{scrubbedSection}"">
 				<h4 class=""panel-title"">
@@ -252,32 +251,32 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 				</h4>
 			</div>
 ");
-                }
-                else
-                {
-                    WriteLiteral($@"
+				}
+				else
+				{
+					WriteLiteral($@"
 			<h1 class=""page-header single-section"">{section}</h1>
 ");
-                }
-                WriteLiteral($@"
+				}
+				WriteLiteral($@"
 			<div id=""section_collapse_{scrubbedSection}"" class=""panel-collapse {(expanded ? "collapse in" : "collapse")}"" aria-expanded=""{(expanded ? "true" : "false")}"" aria-labelledby=""section_heading_{scrubbedSection}"" data-parent=""#jobsAccordion"">
 ");
-                PanelWriter(scrubbedSection, jobs.Where(j => j.SectionTitle == section).ToList());
-                WriteLiteral($@"
+				PanelWriter(scrubbedSection, jobs.Where(j => j.SectionTitle == section).ToList());
+				WriteLiteral($@"
 			</div>
 		</div>
 ");
-            }
+			}
 
-            if (taskSections.Count > 1)
-            {
-                WriteLiteral($@"
+			if (taskSections.Count > 1)
+			{
+				WriteLiteral($@"
 	</div>
 ");
-            }
+			}
 
-            CronModal();
-            WriteLiteral($@"
+			CronModal();
+			WriteLiteral($@"
 </div>
 <script>
 	function LoadJSM() {{
@@ -304,11 +303,11 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 </script>
 <link rel=""stylesheet"" type=""text/css"" href=""{Url.To($"{ManagementPage.UrlRoute}/jsmcss")}"" />
 ");
-        }
+		}
 
-        protected void CronModal()
-        {
-            WriteLiteral($@"
+		protected void CronModal()
+		{
+			WriteLiteral($@"
 <div class=""modal fade"" id=""cronModal"" tabindex=""-1"" role=""dialog"" aria-labelledby=""cronModalLabel"">
 	<div class=""modal-dialog modal-lg"" role=""document"">
 		<div class=""modal-content"">
@@ -317,8 +316,8 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 				<h4 class=""modal-title"" id=""cronModalLabel"">Cron Expression Builder</h4>
 			</div>
 			<div class=""modal-body"">");
-            Write(Html.RenderPartial(new CronJobsPage()));
-            WriteLiteral($@"
+			Write(Html.RenderPartial(new CronJobsPage()));
+			WriteLiteral($@"
 			</div>
 			<div class=""modal-footer"">
 				<button type=""button"" class=""btn btn-default"" data-dismiss=""modal"">Close</button>
@@ -327,39 +326,39 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 		</div>
 	</div>
 </div>");
-        }
+		}
 
-        protected void PanelWriter(string section, List<JobMetadata> jobs)
-        {
-            foreach (var job in jobs)
-            {
-                var id = $"{section}_{job.Name.ScrubURL()}";
-                var expanded = jobs.First() == job;
+		protected void PanelWriter(string section, List<JobMetadata> jobs)
+		{
+			foreach (var job in jobs)
+			{
+				var id = $"{section}_{job.Name.ScrubURL()}";
+				var expanded = jobs.First() == job;
 
-                var options = new JObject();
-                var qAttr = job.MethodInfo.GetCustomAttributes(true).OfType<QueueAttribute>().FirstOrDefault();
-                options.Add("Queue", (qAttr == default ? "default" : qAttr.Queue).ToUpper());
+				var options = new JObject();
+				var qAttr = job.MethodInfo.GetCustomAttributes(true).OfType<QueueAttribute>().FirstOrDefault();
+				options.Add("Queue", (qAttr == default ? "default" : qAttr.Queue).ToUpper());
 
-                var showMDAttr = job.MethodInfo.GetCustomAttributes(true).OfType<ShowMetaDataAttribute>().FirstOrDefault();
-                var showMeta = showMDAttr != default && showMDAttr.ShowOnUI;
-                if (showMeta)
-                {
-                    var retryAttr = job.MethodInfo.GetCustomAttributes(true).OfType<AutomaticRetryAttribute>().FirstOrDefault();
-                    if (retryAttr != default)
-                    {
-                        var ar = new JObject
-                        {
-                            { "Attempts", retryAttr.Attempts },
-                            { "AllowMultiple", retryAttr.AllowMultiple },
-                            { "DelaysInSeconds", (retryAttr.DelaysInSeconds != null ? JsonConvert.SerializeObject(retryAttr.DelaysInSeconds) : null) },
-                            { "LogEvents", retryAttr.LogEvents },
-                            { "OnAttemptsExceeded", (retryAttr.OnAttemptsExceeded == AttemptsExceededAction.Delete ? "Delete" : "Fail") }
-                        };
-                        options.Add("AutomaticRetryAttribute", ar);
-                    }
-                }
+				var showMDAttr = job.MethodInfo.GetCustomAttributes(true).OfType<ShowMetaDataAttribute>().FirstOrDefault();
+				var showMeta = showMDAttr != default && showMDAttr.ShowOnUI;
+				if (showMeta)
+				{
+					var retryAttr = job.MethodInfo.GetCustomAttributes(true).OfType<AutomaticRetryAttribute>().FirstOrDefault();
+					if (retryAttr != default)
+					{
+						var ar = new JObject
+						{
+							{ "Attempts", retryAttr.Attempts },
+							{ "AllowMultiple", retryAttr.AllowMultiple },
+							{ "DelaysInSeconds", (retryAttr.DelaysInSeconds != null ? JsonConvert.SerializeObject(retryAttr.DelaysInSeconds) : null) },
+							{ "LogEvents", retryAttr.LogEvents },
+							{ "OnAttemptsExceeded", (retryAttr.OnAttemptsExceeded == AttemptsExceededAction.Delete ? "Delete" : "Fail") }
+						};
+						options.Add("AutomaticRetryAttribute", ar);
+					}
+				}
 
-                WriteLiteral($@"
+				WriteLiteral($@"
 	<div class=""panel panel-info js-management card"" data-id=""{id}"" style=""{(expanded ? "margin-top:20px" : "")}"">
 		<div id=""heading_{id}"" class=""panel-heading card-header {(expanded ? "" : "collapsed")}collapsed"" role=""button"" data-toggle=""collapse"" data-parent=""#accordion"" href=""#collapse_{id}"" aria-expanded=""{(expanded ? "true" : "false")}"" aria-controls=""collapse_{id}"">
 			<h4 class=""panel-title"">
@@ -370,9 +369,9 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 			<div class=""panel-body"" style=""padding-bottom: 0px;"">
 				<p>{job.Description}</p>
 ");
-                if (showMeta)
-                {
-                    WriteLiteral($@"
+				if (showMeta)
+				{
+					WriteLiteral($@"
 				<div class=""well"" style=""display: flex; padding: 3px; margin-bottom: 0px;"">
 					<div class=""col-xs-1"" role=""button"" data-toggle=""collapse"" href=""#options_collapse_{id}"" aria-expanded=""false"" aria-controls=""options_collapse_{id}"">
 						<span class=""glyphicon glyphicon-info-sign""></span>
@@ -380,105 +379,105 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 					<pre style=""margin-bottom: 0px; border: transparent;"" class=""col-xs-11 collapse"" aria-expanded=""false"" id=""options_collapse_{id}"">{JsonConvert.SerializeObject(options, Formatting.Indented)}</pre>
 				</div>
 ");
-                }
-                WriteLiteral($@"
+				}
+				WriteLiteral($@"
 			</div>
 			<div class=""panel-body"" style=""padding-bottom: 0px;"">
 ");
-                JobWriter(id, job);
-                WriteLiteral($@"
+				JobWriter(id, job);
+				WriteLiteral($@"
 			</div>
 			<div class=""panel-footer"">
 ");
-                ButtonWriter(id, job);
-                WriteLiteral($@"
+				ButtonWriter(id, job);
+				WriteLiteral($@"
 			</div>
 		</div>
 	</div>
 ");
-            }
-        }
+			}
+		}
 
-        protected void JobWriter(string id, JobMetadata job)
-        {
-            string inputs = string.Empty;
+		protected void JobWriter(string id, JobMetadata job)
+		{
+			string inputs = string.Empty;
 
-            foreach (var parameterInfo in job.MethodInfo.GetParameters())
-            {
-                if (parameterInfo.ParameterType == typeof(PerformContext) || parameterInfo.ParameterType == typeof(IJobCancellationToken))
-                {
-                    continue;
-                }
+			foreach (var parameterInfo in job.MethodInfo.GetParameters())
+			{
+				if (parameterInfo.ParameterType == typeof(PerformContext) || parameterInfo.ParameterType == typeof(IJobCancellationToken))
+				{
+					continue;
+				}
 
-                DisplayDataAttribute displayInfo = null;
-                if (parameterInfo.GetCustomAttributes(true).OfType<DisplayDataAttribute>().Any())
-                {
-                    displayInfo = parameterInfo.GetCustomAttribute<DisplayDataAttribute>();
-                }
-                else
-                {
-                    displayInfo = new DisplayDataAttribute();
-                }
+				DisplayDataAttribute displayInfo = null;
+				if (parameterInfo.GetCustomAttributes(true).OfType<DisplayDataAttribute>().Any())
+				{
+					displayInfo = parameterInfo.GetCustomAttribute<DisplayDataAttribute>();
+				}
+				else
+				{
+					displayInfo = new DisplayDataAttribute();
+				}
 
-                var labelText = displayInfo?.Label ?? parameterInfo.Name;
-                var placeholderText = displayInfo?.Placeholder ?? parameterInfo.Name;
-                var myId = $"{id}_{parameterInfo.Name}";
+				var labelText = displayInfo?.Label ?? parameterInfo.Name;
+				var placeholderText = displayInfo?.Placeholder ?? parameterInfo.Name;
+				var myId = $"{id}_{parameterInfo.Name}";
 
-                if (parameterInfo.ParameterType == typeof(string))
-                {
-                    inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
-                }
-                else if (parameterInfo.ParameterType == typeof(int))
-                {
-                    inputs += InputNumberbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
-                }
-                else if (parameterInfo.ParameterType == typeof(Uri))
-                {
-                    inputs += Input(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, "url", displayInfo.DefaultValue, displayInfo.IsDisabled);
-                }
-                else if (parameterInfo.ParameterType == typeof(DateTime))
-                {
-                    inputs += InputDatebox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
-                }
-                else if (parameterInfo.ParameterType == typeof(bool))
-                {
-                    inputs += "<br/>" + InputCheckbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
-                }
-                else if (parameterInfo.ParameterType.IsEnum)
-                {
-                    var data = new Dictionary<string, string>();
-                    foreach (int v in Enum.GetValues(parameterInfo.ParameterType))
-                    {
-                        data.Add(Enum.GetName(parameterInfo.ParameterType, v), v.ToString());
-                    }
-                    inputs += InputDataList(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, data, displayInfo.DefaultValue?.ToString(), displayInfo.IsDisabled);
-                }
-                else
-                {
-                    inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
-                }
-            }
+				if (parameterInfo.ParameterType == typeof(string))
+				{
+					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+				}
+				else if (parameterInfo.ParameterType == typeof(int))
+				{
+					inputs += InputNumberbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+				}
+				else if (parameterInfo.ParameterType == typeof(Uri))
+				{
+					inputs += Input(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, "url", displayInfo.DefaultValue, displayInfo.IsDisabled);
+				}
+				else if (parameterInfo.ParameterType == typeof(DateTime))
+				{
+					inputs += InputDatebox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+				}
+				else if (parameterInfo.ParameterType == typeof(bool))
+				{
+					inputs += "<br/>" + InputCheckbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+				}
+				else if (parameterInfo.ParameterType.IsEnum)
+				{
+					var data = new Dictionary<string, string>();
+					foreach (int v in Enum.GetValues(parameterInfo.ParameterType))
+					{
+						data.Add(Enum.GetName(parameterInfo.ParameterType, v), v.ToString());
+					}
+					inputs += InputDataList(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, data, displayInfo.DefaultValue?.ToString(), displayInfo.IsDisabled);
+				}
+				else
+				{
+					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled);
+				}
+			}
 
-            if (string.IsNullOrWhiteSpace(inputs))
-            {
-                inputs = "<span>This job does not require inputs</span>";
-            }
+			if (string.IsNullOrWhiteSpace(inputs))
+			{
+				inputs = "<span>This job does not require inputs</span>";
+			}
 
-            WriteLiteral($@"
+			WriteLiteral($@"
 				<div class=""well"">
 					{inputs}
 				</div>
 				<div id=""{id}_error""></div>
 				<div id=""{id}_success""></div>
 ");
-        }
+		}
 
-        protected void ButtonWriter(string id, JobMetadata job)
-        {
-            var url = $"{ManagementPage.UrlRoute}/{job.JobId.ScrubURL()}";
-            var loadingText = "Queuing";
+		protected void ButtonWriter(string id, JobMetadata job)
+		{
+			var url = $"{ManagementPage.UrlRoute}/{job.JobId.ScrubURL()}";
+			var loadingText = "Queuing";
 
-            WriteLiteral($@"
+			WriteLiteral($@"
 				<div class=""btn-group col-xs-12 col-sm-3"">
 					<button class=""btn btn-default dropdown-toggle"" type=""button"" id=""dropdownMenu1"" data-toggle=""dropdown"" aria-haspopup=""true"" aria-expanded=""false"">
 						Task type: <span class=""{id} commandsType"">Immediate</span>
@@ -526,24 +525,24 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 						</button>
 						<ul class=""dropdown-menu dropdown-menu-right"">
 ");
-            var timeSpanItems = new Dictionary<string, string>() {
-                { "5 seconds", "0:0:5" },
-                { "10 seconds", "0:0:10" },
-                { "15 seconds", "0:0:15" },
-                { "30 seconds", "0:0:30" },
-                { "60 seconds", "0:1:0" }
-            };
-            foreach (var o in timeSpanItems)
-            {
-                WriteLiteral($@"
+			var timeSpanItems = new Dictionary<string, string>() {
+				{ "5 seconds", "0:0:5" },
+				{ "10 seconds", "0:0:10" },
+				{ "15 seconds", "0:0:15" },
+				{ "30 seconds", "0:0:30" },
+				{ "60 seconds", "0:1:0" }
+			};
+			foreach (var o in timeSpanItems)
+			{
+				WriteLiteral($@"
 							<li>
 								<a href=""#"" class=""js-management-input-commands text-center"" input-id=""{id}"" input-type=""ScheduleTimeSpan"" schedule=""{o.Value}""
 									data-url=""{Url.To(url)}"" data-loading-text=""{loadingText}"">{o.Key}</a>
 							</li>
 ");
-            }
+			}
 
-            WriteLiteral($@"
+			WriteLiteral($@"
 						</ul>
 					</div>
 				</div>
@@ -555,17 +554,17 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 						</span>
 					</div>
 				</div>");
-            if (job.AllowMultiple)
-            {
-                WriteLiteral($@"
-                <div class=""commands-options CronExpression col-xs-12 col-sm-4"" style=""display:none;"">
-                               <div class=""input-group"" id=""{id}_Name"">
+			if (job.AllowMultiple)
+			{
+				WriteLiteral($@"
+				<div class=""commands-options CronExpression col-xs-12 col-sm-4"" style=""display:none;"">
+							   <div class=""input-group"" id=""{id}_Name"">
 						<input type=""text"" class=""form-control"" title="""" placeholder=""Job Name"" id=""{id}_sys_name"" data-original-title=""Give a unique name to your job"" spellcheck=""false"" data-ms-editor=""true"">
 					</div>
 				</div>
 ");
-            }
-            WriteLiteral($@"
+			}
+			WriteLiteral($@"
 				<div class=""commands-panel CronExpression col-xs-12 col-sm-4"" style=""display:none;"">
 					<div class=""btn-group"">
 						<button class=""btn btn-default btn-sm btn-warning js-management-input-commands"" type=""button"" input-id=""{id}"" input-type=""CronExpression""
@@ -578,17 +577,17 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 						</button>
 						<ul class=""dropdown-menu dropdown-menu-right"">
 ");
-            var cronItems = new Dictionary<string, string>() {
-                            { "Every Minute", Cron.Minutely() },
-                            { "Hourly", Cron.Hourly() },
-                            { "Daily", Cron.Daily() },
-                            { "Weekly", Cron.Weekly() },
-                            { "Monthly", Cron.Monthly() },
-                            { "Annually", Cron.Yearly() }
-                        };
-            foreach (var o in cronItems)
-            {
-                WriteLiteral($@"
+			var cronItems = new Dictionary<string, string>() {
+							{ "Every Minute", Cron.Minutely() },
+							{ "Hourly", Cron.Hourly() },
+							{ "Daily", Cron.Daily() },
+							{ "Weekly", Cron.Weekly() },
+							{ "Monthly", Cron.Monthly() },
+							{ "Annually", Cron.Yearly() }
+						};
+			foreach (var o in cronItems)
+			{
+				WriteLiteral($@"
 								<li>
 									<a href=""#"" class=""js-management-input-commands text-right"" input-id=""{id}"" input-type=""CronExpression"" schedule=""{o.Value}""
 										data-confirm=""If this job already has a schedule then it will be updated.  Continue?"" data-url=""{Url.To(url)}"" data-loading-text=""{loadingText}"">
@@ -596,17 +595,17 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 									</a>
 								</li>
 			");
-            }
-            WriteLiteral($@"
+			}
+			WriteLiteral($@"
 						</ul>
 					</div>
 				</div>
 ");
-        }
+		}
 
-        protected string Input(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, string inputtype, object defaultValue = null, bool isDisabled = false)
-        {
-            return $@"
+		protected string Input(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, string inputtype, object defaultValue = null, bool isDisabled = false)
+		{
+			return $@"
 <div class=""form-group {cssClasses}"">
 		<label for=""{id}"" class=""control-label"">{labelText}</label>
 		{(inputtype != "textarea" ? $@"
@@ -616,21 +615,21 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 		<small id=""{id}Help"" class=""form-text text-muted"">{descriptionText}</small>
 " : "")}
 	</div>";
-        }
+		}
 
-        protected string InputTextbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false)
-        {
-            return Input(id, cssClasses, labelText, placeholderText, descriptionText, "text", defaultValue, isDisabled);
-        }
+		protected string InputTextbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false)
+		{
+			return Input(id, cssClasses, labelText, placeholderText, descriptionText, "text", defaultValue, isDisabled);
+		}
 
-        protected string InputNumberbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false)
-        {
-            return Input(id, cssClasses, labelText, placeholderText, descriptionText, "number", defaultValue, isDisabled);
-        }
+		protected string InputNumberbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false)
+		{
+			return Input(id, cssClasses, labelText, placeholderText, descriptionText, "number", defaultValue, isDisabled);
+		}
 
-        protected string InputDatebox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false)
-        {
-            return $@"
+		protected string InputDatebox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false)
+		{
+			return $@"
 <div class=""form-group {cssClasses}"">
 	<label for=""{id}"" class=""control-label"">{labelText}</label>
 	<div class='input-group date' id='{id}_datetimepicker'>
@@ -643,13 +642,13 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 		<small id=""{id}Help"" class=""form-text text-muted"">{descriptionText}</small>
 " : "")}
 </div>";
-        }
+		}
 
-        protected string InputCheckbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false)
-        {
-            var bDefaultValue = (bool)(defaultValue ?? false);
+		protected string InputCheckbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false)
+		{
+			var bDefaultValue = (bool)(defaultValue ?? false);
 
-            return $@"
+			return $@"
 <div class=""form-group {cssClasses}"">
 	<div class=""form-check"">
 		<input class=""form-check-input"" type=""checkbox"" id=""{id}"" {(bDefaultValue ? "checked='checked'" : "")} {(isDisabled ? "disabled='disabled'" : "")} />
@@ -659,13 +658,13 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 		<small id=""{id}Help"" class=""form-text text-muted"">{descriptionText}</small>
 " : "")}
 </div>";
-        }
+		}
 
-        protected string InputDataList(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, Dictionary<string, string> data, string defaultValue = null, bool isDisabled = false)
-        {
-            var initText = (defaultValue != null ? defaultValue : (!string.IsNullOrWhiteSpace(placeholderText) ? placeholderText : "Select a value"));
-            var initValue = (defaultValue != null && data.ContainsKey(defaultValue)) ? data[defaultValue].ToString() : "";
-            var output = $@"
+		protected string InputDataList(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, Dictionary<string, string> data, string defaultValue = null, bool isDisabled = false)
+		{
+			var initText = (defaultValue != null ? defaultValue : (!string.IsNullOrWhiteSpace(placeholderText) ? placeholderText : "Select a value"));
+			var initValue = (defaultValue != null && data.ContainsKey(defaultValue)) ? data[defaultValue].ToString() : "";
+			var output = $@"
 <div class=""{cssClasses}"">
 	<label class=""control-label"">{labelText}</label>
 	<div class=""dropdown"">
@@ -674,14 +673,14 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 			<span class=""caret""></span>
 		</button>
 		<ul class=""dropdown-menu data-list-options"" data-optionsid=""{id}"" aria-labelledby=""{id}"">";
-            foreach (var item in data)
-            {
-                output += $@"
+			foreach (var item in data)
+			{
+				output += $@"
 			<li><a href=""javascript:void(0)"" class=""option"" data-optiontext=""{item.Key}"" data-optionvalue=""{item.Value}"">{item.Key}</a></li>
 ";
-            }
+			}
 
-            output += $@"
+			output += $@"
 		</ul>
 	</div>
 	{(!string.IsNullOrWhiteSpace(descriptionText) ? $@"
@@ -689,7 +688,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 " : "")}
 </div>";
 
-            return output;
-        }
-    }
+			return output;
+		}
+	}
 }

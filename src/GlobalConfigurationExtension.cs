@@ -15,7 +15,8 @@ namespace Hangfire.Dashboard.Management.v2
 		}
 		public static void UseManagementPages(this IGlobalConfiguration config, Assembly[] assemblies)
 		{
-			foreach (var assembly in assemblies) {
+			foreach (var assembly in assemblies)
+			{
 				JobsHelper.GetAllJobs(assembly);
 			}
 			CreateManagement();
@@ -24,9 +25,11 @@ namespace Hangfire.Dashboard.Management.v2
 		private static void CreateManagement()
 		{
 			var pageSet = new List<string>();
-			foreach (var pageInfo in JobsHelper.Pages) {
+			foreach (var pageInfo in JobsHelper.Pages)
+			{
 				ManagementBasePage.AddCommands(pageInfo.MenuName);
-				if (!pageSet.Contains(pageInfo.MenuName)) {
+				if (!pageSet.Contains(pageInfo.MenuName))
+				{
 					pageSet.Add(pageInfo.MenuName);
 					ManagementSidebarMenu.Items.Add(p => new MenuItem(pageInfo.MenuName, p.Url.To($"{ManagementPage.UrlRoute}/{pageInfo.MenuName.ScrubURL()}")) {
 						Active = p.RequestPath.StartsWith($"{ManagementPage.UrlRoute}/{pageInfo.MenuName.ScrubURL()}")

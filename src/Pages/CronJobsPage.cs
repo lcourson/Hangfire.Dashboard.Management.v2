@@ -448,7 +448,7 @@
 			""0 15 10 ? * 6L 2002-2005"" Run once at 10:15 am on the last Friday of each month between 2002 to 2005<br />
 			""0 15 10 ? * 6#3"" Run once at 10:15 am on the third Friday of each month<br />
 		</div>
-		
+
 		<!--Cron Expression Analysis-->
 		<div role=""tabpanel"" class=""tab-pane"" id=""cron"">
 			Verified address {Url.To("/cron?cron=*+*+*+*+*")}<br /><br />

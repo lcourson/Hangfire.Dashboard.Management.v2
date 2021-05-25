@@ -2,9 +2,9 @@
 
 namespace Hangfire.Dashboard.Management.v2.Metadata
 {
-    public interface IInputDataList
-    {
-        Dictionary<string, string> GetData();
-        string GetDefaultValue();
-    }
+	public interface IInputDataList
+	{
+		Dictionary<string, string> GetData();
+		string GetDefaultValue();
+	}
 }

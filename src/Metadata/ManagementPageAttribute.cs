@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace Hangfire.Dashboard.Management.v2.Metadata
 {
