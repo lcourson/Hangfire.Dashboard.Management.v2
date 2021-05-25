@@ -16,7 +16,7 @@ namespace Hangfire.Dashboard.Management.v2.Support
 
 		internal static void GetAllJobs(Assembly assembly)
 		{
-			foreach (Type ti in assembly.GetTypes().Where(x => !x.IsInterface && typeof(IJob).IsAssignableFrom(x) && x.Name != (typeof(IJob).Name)))
+			foreach (Type ti in assembly.GetTypes().Where(x => typeof(IJob).IsAssignableFrom(x) && x.Name != (typeof(IJob).Name)))
 			{
 				var q = "default";
 				var title = "Default";
