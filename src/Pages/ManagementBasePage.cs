@@ -87,12 +87,13 @@ namespace Hangfire.Dashboard.Management.v2.Pages
                         }
                         else if (parameterInfo.ParameterType == typeof(int))
                         {
-                            if (formInput != null) item = int.Parse(formInput);
-                            if (displayInfo.IsRequired && string.IsNullOrWhiteSpace((string)item))
+                            int intNumber;
+                            if (int.TryParse(formInput, out intNumber) == false)
                             {
-                                errorMessage = $"{parameterInfo.Name} is required.";
+                                errorMessage = $"{parameterInfo.Name} was not in a correct format.";
                                 break;
                             }
+                            item = intNumber;
                         }
                         else if (parameterInfo.ParameterType == typeof(DateTime))
                         {
