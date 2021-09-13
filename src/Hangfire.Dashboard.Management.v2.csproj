@@ -9,14 +9,14 @@
     <RepositoryUrl>https://github.com/lcourson/Hangfire.Dashboard.Management.v2</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
 		<Description />
-		<Version>2.1.0</Version>
+		<Version>2.2.0</Version>
 		<PackageTags>hangfire dashboard management</PackageTags>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
 		<Authors>Lance Courson</Authors>
 		<Company />
 		<Product>Hangfire.Dashboard.Management.v2</Product>
-		<AssemblyVersion>2.1.0.0</AssemblyVersion>
+		<AssemblyVersion>2.2.0.0</AssemblyVersion>
 		<PackageReleaseNotes>Fixing issue where exception is thrown when field has no DisplayData attribute (massada)
 Fixing status code being set twice (massada)</PackageReleaseNotes>
 	</PropertyGroup>
@@ -66,6 +66,6 @@ Fixing status code being set twice (massada)</PackageReleaseNotes>
 	  <Folder Include="Properties\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="HangFire.Core" Version="1.7.7" />
+	  <PackageReference Include="HangFire.Core" Version="1.7.25" />
 	</ItemGroup>
 </Project>
