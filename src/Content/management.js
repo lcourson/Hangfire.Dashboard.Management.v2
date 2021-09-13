@@ -1,4 +1,4 @@
-(function (hangfire) {
+﻿(function (hangfire) {
 
     hangfire.Management = (function () {
         function Management() {
