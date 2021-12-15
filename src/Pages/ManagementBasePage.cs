@@ -204,7 +204,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 										break;
 									}
 
-									if (!DateTime.TryParse(schedule ?? timeSpan, out DateTime dt))
+									if (!TimeSpan.TryParse(schedule ?? timeSpan, out TimeSpan dt))
 									{
 										errorMessage = "Unable to parse Delay";
 										break;
