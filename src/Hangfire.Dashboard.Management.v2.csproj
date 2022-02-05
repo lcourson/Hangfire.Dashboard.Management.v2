@@ -4,10 +4,12 @@
 		<IsPackable>true</IsPackable>
 		<PackageOutputPath>artifacts</PackageOutputPath>
 		<PackageId>Hangfire.Dashboard.Management.v2</PackageId>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<IncludeContentInPack>true</IncludeContentInPack>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <RepositoryUrl>https://github.com/lcourson/Hangfire.Dashboard.Management.v2</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/lcourson/Hangfire.Dashboard.Management.v2</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<Description />
 		<Version>2.2.0</Version>
 		<PackageTags>hangfire dashboard management</PackageTags>
@@ -17,8 +19,7 @@
 		<Company />
 		<Product>Hangfire.Dashboard.Management.v2</Product>
 		<AssemblyVersion>2.2.0.0</AssemblyVersion>
-		<PackageReleaseNotes>Fixing issue where exception is thrown when field has no DisplayData attribute (massada)
-Fixing status code being set twice (massada)</PackageReleaseNotes>
+		<PackageReleaseNotes></PackageReleaseNotes>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
 	  <Optimize>true</Optimize>
@@ -28,6 +29,11 @@ Fixing status code being set twice (massada)</PackageReleaseNotes>
 	  <DebugType>full</DebugType>
 	  <DebugSymbols>true</DebugSymbols>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Properties\**" />
+	  <EmbeddedResource Remove="Properties\**" />
+	  <None Remove="Properties\**" />
+	</ItemGroup>
 	<ItemGroup>
 		<None Remove=".gitignore" />
 		<None Remove="Content\cron.js" />
@@ -39,7 +45,6 @@ Fixing status code being set twice (massada)</PackageReleaseNotes>
 		<None Remove="Content\management.js" />
 		<None Remove="LICENSE.md" />
 		<None Remove="management.PNG" />
-		<None Remove="README.md" />
 		<EmbeddedResource Include="Content\cron.js">
 		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</EmbeddedResource>
@@ -63,9 +68,10 @@ Fixing status code being set twice (massada)</PackageReleaseNotes>
 		</EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Properties\" />
+	  <PackageReference Include="HangFire.Core" Version="1.7.28" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="HangFire.Core" Version="1.7.25" />
+		<None Include=".\..\README.md" Pack="true" PackagePath="" />
+		<None Include=".\..\LICENSE.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 </Project>
