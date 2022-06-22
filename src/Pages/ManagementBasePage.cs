@@ -184,7 +184,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 									}
 									try
 									{
-										var jobId = client.Create(job, new ScheduledState(dt.ToLocalTime()));//Queue
+										var jobId = client.Create(job, new ScheduledState(dt));//Queue
 										jobLink = new UrlHelper(context).JobDetails(jobId);
 									}
 									catch (Exception e)
