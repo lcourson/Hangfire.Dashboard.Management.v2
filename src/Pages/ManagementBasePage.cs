@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -11,7 +12,7 @@ using Hangfire.Dashboard.Management.v2.Support;
 using Hangfire.Dashboard.Pages;
 using Hangfire.Server;
 using Hangfire.States;
-
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -96,7 +97,12 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 						}
 						else if (parameterInfo.ParameterType == typeof(DateTime))
 						{
-							item = formInput == null ? DateTime.MinValue : DateTime.Parse(formInput);
+							// If languages are supported by the web UI, this can be used to identify the browser language
+							// var httpContext = ((AspNetCoreDashboardContext) context).HttpContext;
+							// var language = httpContext.Request.GetTypedHeaders().AcceptLanguage?.OrderByDescending(x => x.Quality ?? 1).Select(x => x.Value.ToString()).ToArray() ?? Array.Empty<string>();
+							// Given the lack of locale support in bootstrap-datetimepicker, we'll just use the default en-US culture
+							var locale = CultureInfo.GetCultureInfo("en-US");
+							item = formInput == null ? DateTime.MinValue : DateTime.Parse(formInput, locale);
 							if (displayInfo.IsRequired && item.Equals(DateTime.MinValue))
 							{
 								errorMessage = $"{parameterInfo.Name} is required.";
@@ -109,7 +115,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 						}
 						else if (!parameterInfo.ParameterType.IsValueType)
 						{
-							if (formInput == null || formInput.Length == 0)
+							if (string.IsNullOrEmpty(formInput))
 							{
 								item = null;
 								if (displayInfo.IsRequired)
