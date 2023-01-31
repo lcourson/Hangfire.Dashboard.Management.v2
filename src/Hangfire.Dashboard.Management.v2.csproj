@@ -68,6 +68,7 @@
 		</EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
+	  <PackageReference Include="Hangfire.AspNetCore" Version="1.7.28" />
 	  <PackageReference Include="HangFire.Core" Version="1.7.28" />
 	</ItemGroup>
 	<ItemGroup>
