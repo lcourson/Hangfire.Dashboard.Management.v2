@@ -51,7 +51,7 @@ namespace Hangfire.Dashboard.Management.v2.Metadata
 		public bool IsRequired { get; set; } = false;
 
 		public DisplayDataAttribute() { }
-		public DisplayDataAttribute(string label = null, string placeholder = null, string description = null, object defaultValue = null, string cssClasses = null, bool isDisabled = false, bool isRequired = false)
+		public DisplayDataAttribute(string label = null, string placeholder = null, string description = null, object defaultValue = null, string cssClasses = null, bool isDisabled = false, bool isRequired = false, bool isMultiLine = false)
 		{
 			this.Label = label;
 			this.Placeholder = placeholder;
@@ -60,6 +60,7 @@ namespace Hangfire.Dashboard.Management.v2.Metadata
 			this.CssClasses = cssClasses;
 			this.IsDisabled = isDisabled;
 			this.IsRequired = IsRequired;
+			this.IsMultiLine = isMultiLine;
 		}
 	}
 }
