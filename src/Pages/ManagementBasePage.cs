@@ -459,7 +459,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 
 				if (parameterInfo.ParameterType == typeof(string))
 				{
-					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled, displayInfo.IsRequired);
+					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled, displayInfo.IsRequired, displayInfo.IsMultiLine);
 				}
 				else if (parameterInfo.ParameterType == typeof(int))
 				{
@@ -637,23 +637,26 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 ");
 		}
 
-		protected string Input(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, string inputtype, object defaultValue = null, bool isDisabled = false, bool isRequired = false)
+		protected string Input(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, string _inputtype, object defaultValue = null, bool isDisabled = false, bool isRequired = false, bool isMultiline = false)
 		{
+			var inputtype = _inputtype.ToLower();
+			if (isMultiline && _inputtype == "text") inputtype = "textarea";
+			var field = $@"<input class=""form-control test3"" type=""{inputtype}"" placeholder=""{placeholderText}"" id=""{id}"" value=""{defaultValue}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")} />";
+			var descriptionEl = !string.IsNullOrWhiteSpace(descriptionText) ? $@"<small id=""{id}Help"" class=""form-text text-muted"">{descriptionText}</small>" : "";
+			if (inputtype == "textarea") field = $@"<textarea rows=""10"" class=""form-control"" placeholder=""{placeholderText}"" id=""{id}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")}>{defaultValue}</textarea>";
+
 			return $@"
-<div class=""form-group {cssClasses} {(isRequired ? "required" : "")}"">
-		<label for=""{id}"" class=""control-label"">{labelText}</label>
-		{(inputtype != "textarea" ? $@"
-		<input class=""form-control"" type=""{inputtype}"" placeholder=""{placeholderText}"" id=""{id}"" value=""{defaultValue}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")} />" : $@"
-		<textarea rows=""10"" class=""form-control"" placeholder=""{placeholderText}"" id=""{id}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")}>{defaultValue}</textarea>")}
-		{(!string.IsNullOrWhiteSpace(descriptionText) ? $@"
-		<small id=""{id}Help"" class=""form-text text-muted"">{descriptionText}</small>
-" : "")}
-	</div>";
+				<div class=""form-group {cssClasses} {(isRequired ? "required" : "")}"">
+					<label for=""{id}"" class=""control-label"">{labelText}</label>
+					{field}
+					{descriptionEl}
+				</div>"
+			;
 		}
 
-		protected string InputTextbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false, bool isRequired = false)
+		protected string InputTextbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false, bool isRequired = false, bool isMultiline = false)
 		{
-			return Input(id, cssClasses, labelText, placeholderText, descriptionText, "text", defaultValue, isDisabled, isRequired);
+			return Input(id, cssClasses, labelText, placeholderText, descriptionText, "text", defaultValue, isDisabled, isRequired, isMultiline);
 		}
 
 		protected string InputNumberbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false, bool isRequired = false)
