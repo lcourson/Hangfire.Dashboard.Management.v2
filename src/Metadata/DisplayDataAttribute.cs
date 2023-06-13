@@ -59,7 +59,7 @@ namespace Hangfire.Dashboard.Management.v2.Metadata
 			this.DefaultValue = defaultValue;
 			this.CssClasses = cssClasses;
 			this.IsDisabled = isDisabled;
-			this.IsRequired = IsRequired;
+			this.IsRequired = isRequired;
 			this.IsMultiLine = isMultiLine;
 		}
 	}
