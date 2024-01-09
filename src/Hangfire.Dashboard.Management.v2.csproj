@@ -20,17 +20,18 @@
 		<Company />
 		<Product>Hangfire.Dashboard.Management.v2</Product>
 		<AssemblyVersion>2.3.0.0</AssemblyVersion>
-		<PackageReleaseNotes>2.3.0
+		<PackageReleaseNotes>
+			2.3.0
 
-Replaced jQuery.InputMask with new library to fix CSP issues.
-Replaced Bootstrap DropDown with Tempus Dominus to fix CSP issues.
-Reworked how pages were generated to be more in line with the way that Hangfire.Core is working
-Changed how DateTime objects are passed to the API endpoint.
-		They are now passed as UTC from the client and should passed to the Job's method as UTC.
-</PackageReleaseNotes>
+			Replaced jQuery.InputMask with new library to fix CSP issues.
+			Replaced Bootstrap DropDown with Tempus Dominus to fix CSP issues.
+			Reworked how pages were generated to be more in line with the way that Hangfire.Core is working
+			Changed how DateTime objects are passed to the API endpoint.
+			They are now passed as UTC from the client and should passed to the Job's method as UTC.
+		</PackageReleaseNotes>
 		<UpdateVersionProperties>true</UpdateVersionProperties>
 		<UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
-</PropertyGroup>
+	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
 		<Optimize>true</Optimize>
 		<DefineConstants>TRACE</DefineConstants>
@@ -86,7 +87,7 @@ Changed how DateTime objects are passed to the API endpoint.
 		<InnerTargets>GenerateRazorClasses;Build</InnerTargets>
 	</PropertyGroup>
 
-	<Target Name="GenerateRazorClasses">
+	<Target Name="GenerateRazorClasses" Condition="Exists('..\packages\RazorGenerator.MsBuild.2.5.0\build\RazorGenerator.MsBuild.targets')">
 		<Exec Command="&quot;$(MSBuildCurrentFullPath)&quot; $(RazorProjectFile) /v:quiet /nologo" Condition="Exists('$(MSBuildCurrentFullPath)')" />
 		<Exec Command="&quot;$(MSBuild14FullPath)&quot; $(RazorProjectFile) /v:quiet /nologo" Condition="Exists('$(MSBuild14FullPath)') and !Exists('$(MSBuildCurrentFullPath)')" />
 		<Warning Text="Classes for Razor files (*.cshtml) weren't re-generated: couldn't find the '$(MSBuild14FullPath)' or '$(MSBuildCurrentFullPath)' file" Condition="!Exists('$(MSBuild14FullPath)') and !Exists('$(MSBuildCurrentFullPath)')" />
