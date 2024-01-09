@@ -1,0 +1,79 @@
+﻿@* Generator: Template TypeVisibility: Internal GeneratePrettyNames: True Namespace: Hangfire.Dashboard.Management.v2.Pages.Partials *@
+@using System.Linq
+@using Hangfire;
+@using Hangfire.Dashboard
+@using Hangfire.Dashboard.Pages
+@using Hangfire.Server;
+@using Hangfire.States;
+@using Hangfire.Dashboard.Management.v2
+@using Hangfire.Dashboard.Management.v2.Pages;
+@using Hangfire.Dashboard.Management.v2.Pages.Partials;
+@using Hangfire.Dashboard.Management.v2.Support
+@using Hangfire.Dashboard.Management.v2.Metadata;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@inherits Hangfire.Dashboard.RazorPage
+@{
+
+}
+
+@foreach (var job in Jobs)
+{
+    var id = $"{SectionName}_{job.Name.ScrubURL()}";
+    var expanded = Jobs.First() == job;
+
+    var options = new JObject();
+    var qAttr = job.MethodInfo.GetCustomAttributes(true).OfType<QueueAttribute>().FirstOrDefault();
+    options.Add("Queue", (qAttr == default ? "default" : qAttr.Queue).ToUpper());
+
+    var showMDAttr = job.MethodInfo.GetCustomAttributes(true).OfType<ShowMetaDataAttribute>().FirstOrDefault();
+    var showMeta = showMDAttr != default && showMDAttr.ShowOnUI;
+
+    if (showMeta)
+    {
+        var retryAttr = job.MethodInfo.GetCustomAttributes(true).OfType<AutomaticRetryAttribute>().FirstOrDefault();
+        if (retryAttr != default)
+        {
+            var ar = new JObject(){
+                            { "Attempts", retryAttr.Attempts },
+                            { "AllowMultiple", retryAttr.AllowMultiple },
+                            { "DelaysInSeconds", (retryAttr.DelaysInSeconds != null ? JsonConvert.SerializeObject(retryAttr.DelaysInSeconds) : null) },
+                            { "LogEvents", retryAttr.LogEvents },
+                            { "OnAttemptsExceeded", (retryAttr.OnAttemptsExceeded == AttemptsExceededAction.Delete ? "Delete" : "Fail") }
+                        };
+            options.Add("AutomaticRetryAttribute", ar);
+        }
+    }
+    var headingCollapsed = expanded ? "" : "collapsed";
+    var panelCollapsed = expanded ? "collapse in" : "collapse";
+    var ariaExpanded = expanded ? "true" : "false";
+    var multiAllowed = job.AllowMultiple ? "hdm-multi-allowed" : "";
+
+    <div class="panel panel-info hdm-management hdm-job-panel card @multiAllowed" data-id="@id">
+        <div id="@($"heading_{id}")" class="panel-heading card-header @headingCollapsed collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="@($"#collapse_{id}")" aria-expanded="@ariaExpanded" aria-controls="@($"collapse_{id}")">
+            <h4 class="panel-title">
+                @job.Name
+            </h4>
+        </div>
+        <div id="@($"collapse_{id}")" class="panel-collapse @panelCollapsed hdm-job-container" aria-expanded="@ariaExpanded" aria-labelledby="@($"heading_{id}")" data-parent="#jobsAccordion">
+            <div class="panel-body">
+                <p>@job.Description</p>
+                @if (showMeta)
+                {
+                    <div class="well hdm-show-metadata">
+                        <div class="col-xs-1" role="button" data-toggle="collapse" href="@($"#options_collapse_{id}")" aria-expanded="false" aria-controls="@($"options_collapse_{id}")" title="Click to show metadata for this job.">
+                            <span class="glyphicon glyphicon-info-sign"></span>
+                        </div>
+                        <pre class="col-xs-11 collapse" aria-expanded="false" id="@($"options_collapse_{id}")">@JsonConvert.SerializeObject(options, Formatting.Indented)</pre>
+                    </div>
+                }
+            </div>
+            <div class="panel-body">
+                @Html.RenderPartial(new JobPartial(id, job))
+            </div>
+            <div class="panel-footer">
+                @Html.RenderPartial(new ButtonPartial(id, job))
+            </div>
+        </div>
+    </div>
+}

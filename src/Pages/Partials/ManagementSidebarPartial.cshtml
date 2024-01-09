@@ -1,0 +1,35 @@
+﻿@* Generator: Template TypeVisibility: Internal GeneratePrettyNames: True Namespace: Hangfire.Dashboard.Management.v2.Pages.Partials *@
+@using Hangfire.Dashboard
+@using Hangfire.Dashboard.Pages
+@using Hangfire.Dashboard.Management.v2
+@inherits Hangfire.Dashboard.RazorPage
+@{
+}
+
+<ul class="nav nav-tabs hidden-md hidden-lg">
+@foreach (var item in Items)
+	{
+		var itemValue = item(this);
+		var activeClass = itemValue.Active ? "active" : "";
+		<li role="presentation" class="@activeClass">
+			<a href="@itemValue.Url">@itemValue.Text
+				<span class="pull-right">
+				</span>
+			</a>
+		</li>
+	}
+</ul>
+<ul class="nav nav-pills nav-stacked visible-md-block visible-lg-block">
+@foreach (var item in Items)
+	{
+		var itemValue = item(this);
+		var activeClass = itemValue.Active ? "active" : "";
+		<li role="presentation" class="@activeClass">
+			<a href="@itemValue.Url">
+				@itemValue.Text
+				<span class="pull-right">
+				</span>
+			</a>
+		</li>
+	}
+</ul>

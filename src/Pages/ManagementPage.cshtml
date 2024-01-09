@@ -1,0 +1,23 @@
+﻿@* Generator: Template TypeVisibility: Internal GeneratePrettyNames: True Namespace: Hangfire.Dashboard.Management.v2.Pages *@
+@using Hangfire.Dashboard
+@using Hangfire.Dashboard.Pages
+@using Hangfire.Dashboard.Management.v2
+@using Hangfire.Dashboard.Management.v2.Pages
+@inherits Hangfire.Dashboard.RazorPage
+@{
+    Layout = new LayoutPage(Title);
+    var version = $"v{GlobalConfigurationExtension.FileSuffix().Replace("_", ".")}";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        @Html.RenderPartial(new Partials.ManagementSidebarPartial(Support.ManagementSidebarItemCollection.Items))
+    </div>
+    <div class="col-md-9">
+        <div class="visible-md-block visible-lg-block">
+            Select a queue name from the menu on the left to see the jobs available.
+        </div>
+    </div>
+
+    @Html.RenderPartial(new Partials.ClientResources())
+</div>

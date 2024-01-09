@@ -1,4 +1,41 @@
-﻿.mgmt-title {
+﻿.d-none {
+	display: none !important;
+}
+
+.d-flex {
+	display: flex !important;
+}
+
+.hdm-show-metadata {
+	padding: 0.5rem;
+	margin-bottom: 0px;
+	display: flex;
+}
+
+.hdm-show-metadata pre {
+	margin-bottom: 0px;
+}
+
+.tempus-dominus-widget {
+	width: 30rem;
+}
+
+.hdm-job-panel .commands-panel .glyphicon {
+	margin-right: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+	.panel, .well {
+		/*background-color: transparent;*/
+	}
+}
+
+.tab-content input[type=number] {
+	height: 25px;
+	width: 52px;
+}
+
+.mgmt-title {
 	margin-top: .25em;
 }
 

@@ -1,4 +1,4 @@
-# Hangfire.Dashboard.Management.v2
+﻿# Hangfire.Dashboard.Management.v2
 
 ![MIT License](https://img.shields.io/badge/license-MIT-orange.svg)
 ![Build Status](https://github.com/lcourson/Hangfire.Dashboard.Management.v2/workflows/Master%20Build/badge.svg?branch=master)
@@ -290,9 +290,21 @@ As with the other projects this one is based on, I have not done extensive testi
 Things might not work as expected and could just not work. There has only been manual testing so far. If attributes are missing I'm not
 sure what will happen.
 
+## Special Thanks
+I started this project to use my own application and never expected that anyone else would use it.
+It wasnt too long before there were pull requests for fixes and issues popping up on the GitHub.
+For those folks that have helped with this project, I thank you!
+
+- [mccj](https://github.com/mccj) - The original Dashboard Management creator.  Without them putting in the initial effort, I don't believe that I would have ever attempted this project.
+- Jose Massada (massada)
+- Tim D'haeyer
+- Carlos Reis (carlittos)
+- Adrian Argasiński (adrian-argasinski-meniga)
+- mkopytin
+
 ## License
 
-Copyright (c) 2020
+Copyright (c) 2023
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

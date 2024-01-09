@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,8 +28,7 @@ namespace ASP.Net_Core_Web_Application
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddHangfire((configuration) =>
-			{
+			services.AddHangfire((configuration) => {
 				configuration
 					.UseMemoryStorage()
 					.UseSimpleAssemblyNameTypeSerializer()
@@ -64,15 +63,18 @@ namespace ASP.Net_Core_Web_Application
 
 			app.UseRouting();
 
-			//app.UseAuthorization();
 
-			app.UseEndpoints(endpoints =>
-			{
+			/* Adding basic CSP Header middleware */
+			app.Use(async (context, next) => {
+				context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; connect-src 'self' wss://*:*; img-src 'self' data:;");
+				await next();
+			});
+
+			app.UseEndpoints(endpoints => {
 				endpoints.MapRazorPages();
 			});
 
-			app.UseHangfireDashboard("/hangfire", new DashboardOptions()
-			{
+			app.UseHangfireDashboard("/hangfire", new DashboardOptions() {
 				DisplayStorageConnectionString = false,
 				DashboardTitle = "ASP.Net Core Hangfire Management",
 				StatsPollingInterval = 5000

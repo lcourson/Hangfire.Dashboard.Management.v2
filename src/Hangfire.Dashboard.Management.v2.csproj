@@ -8,70 +8,97 @@
 		<IncludeContentInPack>true</IncludeContentInPack>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<RepositoryUrl>https://github.com/lcourson/Hangfire.Dashboard.Management.v2</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/lcourson/Hangfire.Dashboard.Management.v2</PackageProjectUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-		<Description />
-		<Version>2.2.0</Version>
+		<Description>A Hangfire Dashboard Addon UI with job parameter support for manually kicking off Hangfire Jobs.</Description>
+		<Version>2.3.0.0</Version>
 		<PackageTags>hangfire dashboard management</PackageTags>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
 		<Authors>Lance Courson</Authors>
 		<Company />
 		<Product>Hangfire.Dashboard.Management.v2</Product>
-		<AssemblyVersion>2.2.0.0</AssemblyVersion>
-		<PackageReleaseNotes></PackageReleaseNotes>
-	</PropertyGroup>
+		<AssemblyVersion>2.3.0.0</AssemblyVersion>
+		<PackageReleaseNotes>2.3.0
+
+Replaced jQuery.InputMask with new library to fix CSP issues.
+Replaced Bootstrap DropDown with Tempus Dominus to fix CSP issues.
+Reworked how pages were generated to be more in line with the way that Hangfire.Core is working
+Changed how DateTime objects are passed to the API endpoint.
+		They are now passed as UTC from the client and should passed to the Job's method as UTC.
+</PackageReleaseNotes>
+		<UpdateVersionProperties>true</UpdateVersionProperties>
+		<UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
+</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
-	  <Optimize>true</Optimize>
-	  <DefineConstants>TRACE</DefineConstants>
+		<Optimize>true</Optimize>
+		<DefineConstants>TRACE</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-	  <DebugType>full</DebugType>
-	  <DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<DebugSymbols>true</DebugSymbols>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Compile Remove="Properties\**" />
-	  <EmbeddedResource Remove="Properties\**" />
-	  <None Remove="Properties\**" />
+		<Compile Remove="Properties\**" />
+		<EmbeddedResource Remove="Properties\**" />
+		<None Remove="Properties\**" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove=".gitignore" />
-		<None Remove="Content\cron.js" />
 		<None Remove="Content\inputmask_min.css" />
-		<None Remove="Content\Libraries\dateTimePicker\bootstrap-datetimepicker.min.css" />
-		<None Remove="Content\Libraries\dateTimePicker\bootstrap-datetimepicker.min.js" />
-		<None Remove="Content\Libraries\inputmask\jquery.inputmask.bundle.min.js" />
+		<None Remove="Content\jsm-init.js" />
+		<None Remove="Content\Libraries\fontawesome\css\customized-solid.css" />
+		<None Remove="Content\Libraries\fontawesome\css\fontawesome.css" />
+		<None Remove="Content\Libraries\fontawesome\webfonts\fa-solid-900.ttf" />
+		<None Remove="Content\Libraries\fontawesome\webfonts\fa-solid-900.woff2" />
+		<None Remove="Content\Libraries\inputmask\inputmask.min.js" />
+		<None Remove="Content\Libraries\popperJS\popper.min.js" />
+		<None Remove="Content\Libraries\tempusDominus\.tempus-dominus.css.map" />
+		<None Remove="Content\Libraries\tempusDominus\tempus-dominus.js.map" />
+		<None Remove="Content\Libraries\tempusDominus\tempus-dominus.min.css" />
+		<None Remove="Content\Libraries\tempusDominus\tempus-dominus.min.js" />
 		<None Remove="Content\management.css" />
 		<None Remove="Content\management.js" />
 		<None Remove="LICENSE.md" />
 		<None Remove="management.PNG" />
-		<EmbeddedResource Include="Content\cron.js">
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Content\Libraries\inputmask\inputmask.min.css">
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Content\Libraries\dateTimePicker\bootstrap-datetimepicker.min.css">
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Content\management.css">
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Content\management.js">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Content\Libraries\dateTimePicker\bootstrap-datetimepicker.min.js">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Content\Libraries\inputmask\jquery.inputmask.bundle.min.js">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</EmbeddedResource>
+		<EmbeddedResource Include="Content\jsm-init.js" />
+		<EmbeddedResource Include="Content\Libraries\fontawesome\css\fontawesome.css" />
+		<EmbeddedResource Include="Content\Libraries\fontawesome\css\customized-solid.css" />
+		<EmbeddedResource Include="Content\Libraries\fontawesome\webfonts\fa-solid-900.ttf" />
+		<EmbeddedResource Include="Content\Libraries\fontawesome\webfonts\fa-solid-900.woff2" />
+		<EmbeddedResource Include="Content\Libraries\inputmask\inputmask.min.js" />
+		<EmbeddedResource Include="Content\Libraries\popperJS\popper.min.js" />
+		<EmbeddedResource Include="Content\Libraries\tempusDominus\tempus-dominus.js.map" />
+		<EmbeddedResource Include="Content\Libraries\inputmask\inputmask.min.css" />
+		<EmbeddedResource Include="Content\Libraries\tempusDominus\.tempus-dominus.css.map" />
+		<EmbeddedResource Include="Content\Libraries\tempusDominus\tempus-dominus.min.css" />
+		<EmbeddedResource Include="Content\Libraries\tempusDominus\tempus-dominus.min.js" />
+		<EmbeddedResource Include="Content\management.css" />
+		<EmbeddedResource Include="Content\management.js" />
 	</ItemGroup>
+
+	<!-- Full MSBuild is required to generate Razor classes -->
+	<PropertyGroup>
+		<MSBuild14FullPath>$(MSBuildProgramFiles32)\..\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe</MSBuild14FullPath>
+		<MSBuildCurrentFullPath>$(MSBuildBinPath)\MSBuild.exe</MSBuildCurrentFullPath>
+		<RazorProjectFile>Razor.build</RazorProjectFile>
+		<InnerTargets>GenerateRazorClasses;Build</InnerTargets>
+	</PropertyGroup>
+
+	<Target Name="GenerateRazorClasses">
+		<Exec Command="&quot;$(MSBuildCurrentFullPath)&quot; $(RazorProjectFile) /v:quiet /nologo" Condition="Exists('$(MSBuildCurrentFullPath)')" />
+		<Exec Command="&quot;$(MSBuild14FullPath)&quot; $(RazorProjectFile) /v:quiet /nologo" Condition="Exists('$(MSBuild14FullPath)') and !Exists('$(MSBuildCurrentFullPath)')" />
+		<Warning Text="Classes for Razor files (*.cshtml) weren't re-generated: couldn't find the '$(MSBuild14FullPath)' or '$(MSBuildCurrentFullPath)' file" Condition="!Exists('$(MSBuild14FullPath)') and !Exists('$(MSBuildCurrentFullPath)')" />
+	</Target>
+
 	<ItemGroup>
-	  <PackageReference Include="HangFire.Core" Version="1.7.28" />
+		<PackageReference Include="HangFire.Core" Version="1.7.28" />
 	</ItemGroup>
+
 	<ItemGroup>
 		<None Include=".\..\README.md" Pack="true" PackagePath="" />
 		<None Include=".\..\LICENSE.md" Pack="true" PackagePath="" />
+		<None Include=".\..\CHANGELOG.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 </Project>

@@ -1,0 +1,18 @@
+﻿@* Generator: Template TypeVisibility: Internal GeneratePrettyNames: True Namespace: Hangfire.Dashboard.Management.v2.Pages.Partials *@
+
+
+@using Hangfire.Dashboard
+@using Hangfire.Dashboard.Management.v2
+@inherits Hangfire.Dashboard.RazorPage
+@{
+    var cssUrl = Url.To(GlobalConfigurationExtension.GetURL(GlobalConfigurationExtension.ManagementUrlType.Css));
+    var jsUrl = Url.To(GlobalConfigurationExtension.GetURL(GlobalConfigurationExtension.ManagementUrlType.JsInit));
+    var jsBundleUrl = Url.To(GlobalConfigurationExtension.GetURL(GlobalConfigurationExtension.ManagementUrlType.JsBundle));
+
+
+    var version = $"v{GlobalConfigurationExtension.FileSuffix().Replace("_", ".")}";
+}
+
+<div id="hdmConfig" data-hdmjsbundleurl="@jsBundleUrl" data-version="@version"></div>
+<link rel="stylesheet" type="text/css" href="@cssUrl" />
+<script src="@jsUrl"></script>
