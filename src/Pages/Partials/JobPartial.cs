@@ -50,7 +50,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages.Partials
 
 				if (parameterInfo.ParameterType == typeof(string))
 				{
-					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled, displayInfo.IsRequired);
+					inputs += InputTextbox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled, displayInfo.IsRequired, displayInfo.IsMultiLine);
 				}
 				else if (parameterInfo.ParameterType == typeof(int))
 				{
@@ -99,21 +99,38 @@ namespace Hangfire.Dashboard.Management.v2.Pages.Partials
 
 		protected string Input(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, string inputtype, object defaultValue = null, bool isDisabled = false, bool isRequired = false)
 		{
-			return $@"
+			var control = $@"
 <div class=""form-group {cssClasses} {(isRequired ? "required" : "")}"">
-		<label for=""{id}"" class=""control-label"">{labelText}</label>
-		{(inputtype != "textarea" ? $@"
-		<input class=""hdm-job-input hdm-input-{inputtype} form-control"" type=""{inputtype}"" placeholder=""{placeholderText}"" id=""{id}"" value=""{defaultValue}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")} />" : $@"
-		<textarea rows=""10"" class=""hdm-job-input hdm-input-textarea form-control"" placeholder=""{placeholderText}"" id=""{id}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")}>{defaultValue}</textarea>")}
-		{(!string.IsNullOrWhiteSpace(descriptionText) ? $@"
-		<small id=""{id}Help"" class=""form-text text-muted"">{descriptionText}</small>
-" : "")}
-	</div>";
+	<label for=""{id}"" class=""control-label"">{labelText}</label>
+";
+
+			if (inputtype == "textarea")
+			{
+				control += $@"
+	<textarea rows=""10"" class=""hdm-job-input hdm-input-textarea form-control"" placeholder=""{placeholderText}"" id=""{id}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")}>{defaultValue}</textarea>
+";
+			}
+			else
+			{
+				control += $@"
+	<input class=""hdm-job-input hdm-input-{inputtype} form-control"" type=""{inputtype}"" placeholder=""{placeholderText}"" id=""{id}"" value=""{defaultValue}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")} />
+";
+			}
+
+			if (!string.IsNullOrWhiteSpace(descriptionText))
+			{
+				control += $@"
+	<small id=""{id}Help"" class=""form-text text-muted"">{descriptionText}</small>
+";
+			}
+			control += $@"
+</div>";
+			return control;
 		}
 
-		protected string InputTextbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false, bool isRequired = false)
+		protected string InputTextbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false, bool isRequired = false, bool isMultiline = false)
 		{
-			return Input(id, cssClasses, labelText, placeholderText, descriptionText, "text", defaultValue, isDisabled, isRequired);
+			return Input(id, cssClasses, labelText, placeholderText, descriptionText, isMultiline ? "textarea" : "text", defaultValue, isDisabled, isRequired);
 		}
 
 		protected string InputNumberbox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false, bool isRequired = false)

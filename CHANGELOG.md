@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.3.1] = 2024-1-10
+
+### Fixed
+- Bug in DisplayDataAttribute for the isRequired flag (Thanks SindreMA)
+- Finished Multiline input support (Thanks SindreMA)
+
+
 ## [2.3.0] - 2024-01-09
 
 I have recently had some time to focus on this project again and have tried to clear up some issues

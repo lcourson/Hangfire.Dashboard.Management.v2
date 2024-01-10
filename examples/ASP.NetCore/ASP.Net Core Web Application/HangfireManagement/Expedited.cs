@@ -32,6 +32,14 @@ namespace ASP.Net_Core_Web_Application.HangfireManagement
 			)] string strInput2,
 
 			[DisplayData(
+				Label = "Multiline Input",
+				IsMultiLine = true,
+				Placeholder = "This is the multiline\nplaceholder text",
+				Description = "This is the description text for the multiline input without a default value where the control is enabled and not required"
+			)]
+			string strInput3,
+
+			[DisplayData(
 				Label = "DateTime Input",
 				Placeholder = "What is the date and time?",
 				DefaultValue = "1/20/2020 1:02 AM",

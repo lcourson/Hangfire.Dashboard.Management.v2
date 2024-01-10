@@ -89,7 +89,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 							item = formInput;
 							if (displayInfo.IsRequired && string.IsNullOrWhiteSpace((string)item))
 							{
-								errorMessage = $"{parameterInfo.Name} is required.";
+								errorMessage = $"{displayInfo.Label ?? parameterInfo.Name} is required.";
 								break;
 							}
 						}
@@ -98,7 +98,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 							int intNumber;
 							if (int.TryParse(formInput, out intNumber) == false)
 							{
-								errorMessage = $"{parameterInfo.Name} was not in a correct format.";
+								errorMessage = $"{displayInfo.Label ?? parameterInfo.Name} was not in a correct format.";
 								break;
 							}
 							item = intNumber;
@@ -108,7 +108,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 							item = formInput == null ? DateTime.MinValue : DateTime.Parse(formInput, null, DateTimeStyles.RoundtripKind);
 							if (displayInfo.IsRequired && item.Equals(DateTime.MinValue))
 							{
-								errorMessage = $"{parameterInfo.Name} is required.";
+								errorMessage = $"{displayInfo.Label ?? parameterInfo.Name} is required.";
 								break;
 							}
 						}
@@ -123,7 +123,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages
 								item = null;
 								if (displayInfo.IsRequired)
 								{
-									errorMessage = $"{parameterInfo.Name} is required.";
+									errorMessage = $"{displayInfo.Label ?? parameterInfo.Name} is required.";
 									break;
 								}
 							}
