@@ -4,12 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [2.3.1] = 2024-1-10
+## [2.3.1] - 2024-1-10
 
 ### Fixed
-- Bug in DisplayDataAttribute for the isRequired flag (Thanks SindreMA)
-- Finished Multiline input support (Thanks SindreMA)
+- Bug in DisplayDataAttribute for the isRequired flag ([SindreMA](https://github.com/SindreMA))
+- Finished Multiline input support ([SindreMA](https://github.com/SindreMA))
+- Schedule Job double conversion ([DanPatten](https://github.com/DanPatten))
+- build badge in readme
 
+
+## Changed
+- Update `jQuery.Validation` from `1.19.3` to `1.19.4` in ASP.Net example site (dependabot)
+- Update `Microsoft.Owin` from `4.2.0` to `4.2.2` in ASP.Net example site (dependabot)
 
 ## [2.3.0] - 2024-01-09
 

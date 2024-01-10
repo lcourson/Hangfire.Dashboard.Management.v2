@@ -1,7 +1,8 @@
 ﻿# Hangfire.Dashboard.Management.v2
 
 ![MIT License](https://img.shields.io/badge/license-MIT-orange.svg)
-![Build Status](https://github.com/lcourson/Hangfire.Dashboard.Management.v2/workflows/Master%20Build/badge.svg?branch=master)
+![Build Status](https://github.com/lcourson/Hangfire.Dashboard.Management.v2/actions/workflows/Master-Build.yml/badge.svg?branch=master)
+
 
 Hangfire.Dashboard.Management.v2 provides a Management page in the default dashboard of [Hangfire](https://www.hangfire.io) that allows for manually kicking 
 off jobs or maintaining the queuing and scheduling of jobs.

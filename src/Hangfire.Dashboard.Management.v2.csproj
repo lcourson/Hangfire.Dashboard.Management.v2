@@ -12,22 +12,18 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<Description>A Hangfire Dashboard Addon UI with job parameter support for manually kicking off Hangfire Jobs.</Description>
-		<Version>2.3.0.0</Version>
+		<Version>2.3.1.0</Version>
 		<PackageTags>hangfire dashboard management</PackageTags>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
 		<Authors>Lance Courson</Authors>
 		<Company />
 		<Product>Hangfire.Dashboard.Management.v2</Product>
-		<AssemblyVersion>2.3.0.0</AssemblyVersion>
+		<AssemblyVersion>2.3.1.0</AssemblyVersion>
 		<PackageReleaseNotes>
-			2.3.0
+			2.3.1
 
-			Replaced jQuery.InputMask with new library to fix CSP issues.
-			Replaced Bootstrap DropDown with Tempus Dominus to fix CSP issues.
-			Reworked how pages were generated to be more in line with the way that Hangfire.Core is working
-			Changed how DateTime objects are passed to the API endpoint.
-			They are now passed as UTC from the client and should passed to the Job's method as UTC.
+			Bugfixes and long awaited pull request merges.  See CHANGELOG.md for details.
 		</PackageReleaseNotes>
 		<UpdateVersionProperties>true</UpdateVersionProperties>
 		<UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
