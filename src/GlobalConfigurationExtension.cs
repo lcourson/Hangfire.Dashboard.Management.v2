@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
-
+using System.Runtime.InteropServices;
 using Hangfire.Dashboard.Management.v2.Pages;
 using Hangfire.Dashboard.Management.v2.Support;
 
@@ -15,28 +16,7 @@ namespace Hangfire.Dashboard.Management.v2
 			return $"{version.Major}_{version.Minor}_{version.Build}";
 		}
 
-		internal enum ManagementUrlType
-		{
-			Css,
-			JsInit,
-			JsBundle,
-			FontAwesomeWebFontWoff2,
-			FontAwesomeWebFontTtf
-		}
-
-		internal static string GetURL(ManagementUrlType urlType)
-		{
-			switch (urlType)
-			{
-				case ManagementUrlType.FontAwesomeWebFontWoff2: return $"{RouteBase}/assets/woff2/fontawesome";
-				case ManagementUrlType.FontAwesomeWebFontTtf: return $"{RouteBase}/assets/ttf/fontawesome";
-				case ManagementUrlType.Css: return $"{RouteBase}/assets/hdm-css-{FileSuffix()}";
-				case ManagementUrlType.JsInit: return $"{RouteBase}/assets/hdm-init-{FileSuffix()}";
-				case ManagementUrlType.JsBundle: return $"{RouteBase}/assets/hdm-bundle-{FileSuffix()}";
-				default: return "";
-			}
-
-		}
+		internal static string GetAssetBaseURL() => $"{RouteBase}/{FileSuffix()}/assets";
 
 		public static void UseManagementPages(this IGlobalConfiguration config, Assembly assembly)
 		{
@@ -54,48 +34,33 @@ namespace Hangfire.Dashboard.Management.v2
 			CreateManagement();
 		}
 
+		public static Tuple<string, string> GetResourceInfo(string resourceName)
+		{
+			var route = resourceName.Replace($"Content", "");
+			var contentType = "application/x-hdm-unknown";
+			if (route.EndsWith("_js")) { contentType = "application/javascript"; }
+			else if (route.EndsWith("_css")) { contentType = "text/css"; }
+			else if (route.EndsWith("_woff2")) { contentType = "font/woff2"; }
+			else if (route.EndsWith("_ttf")) { contentType = "application/octet-stream"; }
+			else if (route.EndsWith("_map")) { contentType = "application/json"; }
+
+			return new Tuple<string, string>(route, contentType);
+
+		}
 		private static void AddClientResourceRoutes()
 		{
-			/* Init JS script that will add other JS Script tags on page load.  This is to make sure that jQuery and BootStrap are already loaded in the DOM before our scripts */
-			DashboardRoutes.Routes.Add(GetURL(ManagementUrlType.JsInit),
-				new CombinedResourceDispatcher(
-					"application/javascript",
-					typeof(GlobalConfigurationExtension).GetTypeInfo().Assembly,
-					$"{typeof(GlobalConfigurationExtension).Namespace}.Content", new[] { "jsm-init.js" }
-				)
-			);
-
-			DashboardRoutes.Routes.Add(GetURL(ManagementUrlType.FontAwesomeWebFontWoff2),
-				new EmbeddedResourceDispatcher(
-					"font/woff2",
-					typeof(GlobalConfigurationExtension).GetTypeInfo().Assembly,
-					$"{typeof(GlobalConfigurationExtension).Namespace}.Content.Libraries.fontawesome.webfonts.fa-solid-900.woff2"
-				)
-			);
-
-			DashboardRoutes.Routes.Add(GetURL(ManagementUrlType.FontAwesomeWebFontTtf),
-				new EmbeddedResourceDispatcher(
-					"application/octet-stream",
-					typeof(GlobalConfigurationExtension).GetTypeInfo().Assembly,
-					$"{typeof(GlobalConfigurationExtension).Namespace}.Content.Libraries.fontawesome.webfonts.fa-solid-900.ttf"
-				)
-			);
-
-			DashboardRoutes.Routes.Add(GetURL(ManagementUrlType.Css),
-				new CombinedResourceDispatcher(
-					"text/css",
-					typeof(GlobalConfigurationExtension).GetTypeInfo().Assembly,
-					$"{typeof(GlobalConfigurationExtension).Namespace}.Content", new[] { "Libraries.fontawesome.css.fontawesome.css", "Libraries.fontawesome.css.customized-solid.css", "Libraries.tempusDominus.tempus-dominus.min.css", "Libraries.inputmask.inputmask.min.css", "management.css" }
-				)
-			);
-
-			DashboardRoutes.Routes.Add(GetURL(ManagementUrlType.JsBundle),
-				new CombinedResourceDispatcher(
-					"application/javascript",
-					typeof(GlobalConfigurationExtension).GetTypeInfo().Assembly,
-					$"{typeof(GlobalConfigurationExtension).Namespace}.Content", new[] { "Libraries.popperJS.popper.min.js", "Libraries.tempusDominus.tempus-dominus.min.js", "Libraries.inputmask.inputmask.min.js", "management.js" }
-				)
-			);
+			var contentNames = typeof(GlobalConfigurationExtension).GetTypeInfo().Assembly.GetManifestResourceNames();
+			foreach (var contentName in contentNames)
+			{
+				var resourceInfo = GetResourceInfo(contentName);
+				DashboardRoutes.Routes.Add(
+					$"{GetAssetBaseURL()}{resourceInfo.Item1}",
+					new ClientSideResourceDispatcher(
+						typeof(GlobalConfigurationExtension).GetTypeInfo().Assembly,
+						resourceInfo.Item2
+					)
+				);
+			}
 		}
 
 		private static void CreateManagement()
@@ -124,31 +89,5 @@ namespace Hangfire.Dashboard.Management.v2
 			});
 
 		}
-
-		//private static void CreateManagement2()
-		//{
-		//	var pageSet = new List<string>();
-		//	foreach (var pageInfo in JobsHelper.Pages)
-		//	{
-		//		ManagementBasePage2.AddCommands(pageInfo.MenuName);
-		//		if (!pageSet.Contains(pageInfo.MenuName))
-		//		{
-		//			pageSet.Add(pageInfo.MenuName);
-		//			ManagementSidebarMenu.Items2.Add(p => new MenuItem(pageInfo.MenuName, p.Url.To($"{RouteBase}/{pageInfo.MenuName.ScrubURL()}")) {
-		//				Active = p.RequestPath.StartsWith($"{RouteBase}/{pageInfo.MenuName.ScrubURL()}")
-		//			});
-		//		}
-
-		//		DashboardRoutes.Routes.AddRazorPage($"{RouteBase}/{pageInfo.MenuName.ScrubURL()}", x => new ManagementBasePage2(pageInfo.MenuName));
-		//	}
-
-		//	//note: have to use new here as the pages are dispatched and created each time. If we use an instance, the page gets duplicated on each call
-		//	DashboardRoutes.Routes.AddRazorPage($"{RouteBase}", x => new ManagementPage2());
-
-		//	NavigationMenu.Items.Add(page => new MenuItem(ManagementBasePage2.Title, page.Url.To($"{RouteBase}2")) {
-		//		Active = page.RequestPath == $"{RouteBase}" || page.RequestPath.StartsWith($"{RouteBase}2/")
-		//	});
-
-		//}
 	}
 }

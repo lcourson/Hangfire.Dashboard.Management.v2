@@ -16,14 +16,20 @@ namespace Hangfire.Dashboard.Management.v2.Pages.Partials
     using System.Linq;
     using System.Text;
     
-    #line 4 "..\..\Pages\Partials\ClientResources.cshtml"
+    #line 3 "..\..\Pages\Partials\ClientResources.cshtml"
     using Hangfire.Dashboard;
     
     #line default
     #line hidden
     
-    #line 5 "..\..\Pages\Partials\ClientResources.cshtml"
+    #line 4 "..\..\Pages\Partials\ClientResources.cshtml"
     using Hangfire.Dashboard.Management.v2;
+    
+    #line default
+    #line hidden
+    
+    #line 5 "..\..\Pages\Partials\ClientResources.cshtml"
+    using Newtonsoft.Json;
     
     #line default
     #line hidden
@@ -37,7 +43,8 @@ namespace Hangfire.Dashboard.Management.v2.Pages.Partials
         {
 
 
-WriteLiteral("\r\n\r\n\r\n");
+WriteLiteral("\r\n\r\n");
+
 
 
 
@@ -46,33 +53,32 @@ WriteLiteral("\r\n\r\n\r\n");
             
             #line 7 "..\..\Pages\Partials\ClientResources.cshtml"
   
-    var cssUrl = Url.To(GlobalConfigurationExtension.GetURL(GlobalConfigurationExtension.ManagementUrlType.Css));
-    var jsUrl = Url.To(GlobalConfigurationExtension.GetURL(GlobalConfigurationExtension.ManagementUrlType.JsInit));
-    var jsBundleUrl = Url.To(GlobalConfigurationExtension.GetURL(GlobalConfigurationExtension.ManagementUrlType.JsBundle));
-
-
+    var assetBaseUrl = Url.To($"{GlobalConfigurationExtension.GetAssetBaseURL()}");
     var version = $"v{GlobalConfigurationExtension.FileSuffix().Replace("_", ".")}";
+    /*
+     * All JS & CSS Urls that need to be loaded from the UI must be extensionless.
+     */
 
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n<div id=\"hdmConfig\" data-hdmjsbundleurl=\"");
+WriteLiteral("\r\n<div id=\"hdmConfig\" data-version=\"");
 
 
             
-            #line 16 "..\..\Pages\Partials\ClientResources.cshtml"
-                                    Write(jsBundleUrl);
+            #line 15 "..\..\Pages\Partials\ClientResources.cshtml"
+                             Write(version);
 
             
             #line default
             #line hidden
-WriteLiteral("\" data-version=\"");
+WriteLiteral("\" data-assetbaseurl=\"");
 
 
             
-            #line 16 "..\..\Pages\Partials\ClientResources.cshtml"
-                                                                Write(version);
+            #line 15 "..\..\Pages\Partials\ClientResources.cshtml"
+                                                          Write(assetBaseUrl);
 
             
             #line default
@@ -81,23 +87,56 @@ WriteLiteral("\"></div>\r\n<link rel=\"stylesheet\" type=\"text/css\" href=\"");
 
 
             
-            #line 17 "..\..\Pages\Partials\ClientResources.cshtml"
-                                        Write(cssUrl);
+            #line 16 "..\..\Pages\Partials\ClientResources.cshtml"
+                                        Write(assetBaseUrl);
 
             
             #line default
             #line hidden
-WriteLiteral("\" />\r\n<script src=\"");
+WriteLiteral("/libs/FontAwesome/css/fontawesome_min_css\" />\r\n<link rel=\"stylesheet\" type=\"text/" +
+"css\" href=\"");
+
+
+            
+            #line 17 "..\..\Pages\Partials\ClientResources.cshtml"
+                                        Write(assetBaseUrl);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("/libs/FontAwesome/css/solid_min_css\" />\r\n<link rel=\"stylesheet\" type=\"text/css\" h" +
+"ref=\"");
 
 
             
             #line 18 "..\..\Pages\Partials\ClientResources.cshtml"
-        Write(jsUrl);
+                                        Write(assetBaseUrl);
 
             
             #line default
             #line hidden
-WriteLiteral("\"></script>");
+WriteLiteral("/libs/TempusDominus/css/tempus-dominus_min_css\" />\r\n<link rel=\"stylesheet\" type=\"" +
+"text/css\" href=\"");
+
+
+            
+            #line 19 "..\..\Pages\Partials\ClientResources.cshtml"
+                                        Write(assetBaseUrl);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("/management_css\" />\r\n<script src=\"");
+
+
+            
+            #line 20 "..\..\Pages\Partials\ClientResources.cshtml"
+        Write(assetBaseUrl);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("/jsm-init_js\"></script>\r\n");
 
 
         }

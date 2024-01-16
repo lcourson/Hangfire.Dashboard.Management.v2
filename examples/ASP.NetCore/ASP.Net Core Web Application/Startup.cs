@@ -66,7 +66,7 @@ namespace ASP.Net_Core_Web_Application
 
 			/* Adding basic CSP Header middleware */
 			app.Use(async (context, next) => {
-				context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; connect-src 'self' wss://*:*; img-src 'self' data:;");
+				context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; connect-src 'self' http://*:* ws://*:* wss://*:*; img-src 'self' data:;");
 				await next();
 			});
 

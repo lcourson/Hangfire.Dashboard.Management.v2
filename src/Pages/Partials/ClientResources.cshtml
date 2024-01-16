@@ -1,18 +1,20 @@
 ﻿@* Generator: Template TypeVisibility: Internal GeneratePrettyNames: True Namespace: Hangfire.Dashboard.Management.v2.Pages.Partials *@
 
-
 @using Hangfire.Dashboard
 @using Hangfire.Dashboard.Management.v2
+@using Newtonsoft.Json;
 @inherits Hangfire.Dashboard.RazorPage
 @{
-    var cssUrl = Url.To(GlobalConfigurationExtension.GetURL(GlobalConfigurationExtension.ManagementUrlType.Css));
-    var jsUrl = Url.To(GlobalConfigurationExtension.GetURL(GlobalConfigurationExtension.ManagementUrlType.JsInit));
-    var jsBundleUrl = Url.To(GlobalConfigurationExtension.GetURL(GlobalConfigurationExtension.ManagementUrlType.JsBundle));
-
-
+    var assetBaseUrl = Url.To($"{GlobalConfigurationExtension.GetAssetBaseURL()}");
     var version = $"v{GlobalConfigurationExtension.FileSuffix().Replace("_", ".")}";
+    /*
+     * All JS & CSS Urls that need to be loaded from the UI must be extensionless.
+     */
 }
 
-<div id="hdmConfig" data-hdmjsbundleurl="@jsBundleUrl" data-version="@version"></div>
-<link rel="stylesheet" type="text/css" href="@cssUrl" />
-<script src="@jsUrl"></script>
+<div id="hdmConfig" data-version="@version" data-assetbaseurl="@assetBaseUrl"></div>
+<link rel="stylesheet" type="text/css" href="@assetBaseUrl/libs/FontAwesome/css/fontawesome_min_css" />
+<link rel="stylesheet" type="text/css" href="@assetBaseUrl/libs/FontAwesome/css/solid_min_css" />
+<link rel="stylesheet" type="text/css" href="@assetBaseUrl/libs/TempusDominus/css/tempus-dominus_min_css" />
+<link rel="stylesheet" type="text/css" href="@assetBaseUrl/management_css" />
+<script src="@assetBaseUrl/jsm-init_js"></script>

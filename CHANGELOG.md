@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.3.2] - 2024-1-11
+
+Minor updates and tweaks.
+
+## Changed
+- Migrated javascript libraries to use npm instead of ones included in the library project.
+- Altered the way that client resources are loaded using a new dispatcher class
+- Added `connect-src` option to CSP for ASP.Net Core's hot reloading used in the example site.
+
 ## [2.3.1] - 2024-1-10
 
 ### Fixed

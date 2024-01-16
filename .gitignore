@@ -9,3 +9,5 @@
 /src/artifacts
 *.user
 **/PublishProfiles
+/src/node_modules
+*.binlog

@@ -1,4 +1,12 @@
-﻿.d-none {
+﻿@font-face {
+	font-family: 'Font Awesome 6 Free';
+	font-style: normal;
+	font-weight: 900;
+	font-display: block;
+	src: url("libs/FontAwesome/webfonts/fa-solid-900_woff2") format("woff2"), url("libs/FontAwesome/webfonts/fa-solid-900_.ttf") format("truetype");
+}
+
+.d-none {
 	display: none !important;
 }
 

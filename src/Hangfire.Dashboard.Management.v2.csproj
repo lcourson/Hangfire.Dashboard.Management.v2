@@ -12,21 +12,22 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<Description>A Hangfire Dashboard Addon UI with job parameter support for manually kicking off Hangfire Jobs.</Description>
-		<Version>2.3.1.0</Version>
+		<Version>2.3.2.0</Version>
 		<PackageTags>hangfire dashboard management</PackageTags>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
 		<Authors>Lance Courson</Authors>
 		<Company />
 		<Product>Hangfire.Dashboard.Management.v2</Product>
-		<AssemblyVersion>2.3.1.0</AssemblyVersion>
+		<AssemblyVersion>2.3.2.0</AssemblyVersion>
 		<PackageReleaseNotes>
-			2.3.1
+			2.3.2
 
-			Bugfixes and long awaited pull request merges.  See CHANGELOG.md for details.
+			Update to how client resources are built and delivered
 		</PackageReleaseNotes>
 		<UpdateVersionProperties>true</UpdateVersionProperties>
 		<UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
 		<Optimize>true</Optimize>
@@ -43,36 +44,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove=".gitignore" />
-		<None Remove="Content\inputmask_min.css" />
-		<None Remove="Content\jsm-init.js" />
-		<None Remove="Content\Libraries\fontawesome\css\customized-solid.css" />
-		<None Remove="Content\Libraries\fontawesome\css\fontawesome.css" />
-		<None Remove="Content\Libraries\fontawesome\webfonts\fa-solid-900.ttf" />
-		<None Remove="Content\Libraries\fontawesome\webfonts\fa-solid-900.woff2" />
-		<None Remove="Content\Libraries\inputmask\inputmask.min.js" />
-		<None Remove="Content\Libraries\popperJS\popper.min.js" />
-		<None Remove="Content\Libraries\tempusDominus\.tempus-dominus.css.map" />
-		<None Remove="Content\Libraries\tempusDominus\tempus-dominus.js.map" />
-		<None Remove="Content\Libraries\tempusDominus\tempus-dominus.min.css" />
-		<None Remove="Content\Libraries\tempusDominus\tempus-dominus.min.js" />
-		<None Remove="Content\management.css" />
-		<None Remove="Content\management.js" />
 		<None Remove="LICENSE.md" />
 		<None Remove="management.PNG" />
-		<EmbeddedResource Include="Content\jsm-init.js" />
-		<EmbeddedResource Include="Content\Libraries\fontawesome\css\fontawesome.css" />
-		<EmbeddedResource Include="Content\Libraries\fontawesome\css\customized-solid.css" />
-		<EmbeddedResource Include="Content\Libraries\fontawesome\webfonts\fa-solid-900.ttf" />
-		<EmbeddedResource Include="Content\Libraries\fontawesome\webfonts\fa-solid-900.woff2" />
-		<EmbeddedResource Include="Content\Libraries\inputmask\inputmask.min.js" />
-		<EmbeddedResource Include="Content\Libraries\popperJS\popper.min.js" />
-		<EmbeddedResource Include="Content\Libraries\tempusDominus\tempus-dominus.js.map" />
-		<EmbeddedResource Include="Content\Libraries\inputmask\inputmask.min.css" />
-		<EmbeddedResource Include="Content\Libraries\tempusDominus\.tempus-dominus.css.map" />
-		<EmbeddedResource Include="Content\Libraries\tempusDominus\tempus-dominus.min.css" />
-		<EmbeddedResource Include="Content\Libraries\tempusDominus\tempus-dominus.min.js" />
-		<EmbeddedResource Include="Content\management.css" />
-		<EmbeddedResource Include="Content\management.js" />
 	</ItemGroup>
 
 	<!-- Full MSBuild is required to generate Razor classes -->
@@ -83,14 +56,85 @@
 		<InnerTargets>GenerateRazorClasses;Build</InnerTargets>
 	</PropertyGroup>
 
-	<Target Name="GenerateRazorClasses" Condition="Exists('..\packages\RazorGenerator.MsBuild.2.5.0\build\RazorGenerator.MsBuild.targets')">
-		<Exec Command="&quot;$(MSBuildCurrentFullPath)&quot; $(RazorProjectFile) /v:quiet /nologo" Condition="Exists('$(MSBuildCurrentFullPath)')" />
-		<Exec Command="&quot;$(MSBuild14FullPath)&quot; $(RazorProjectFile) /v:quiet /nologo" Condition="Exists('$(MSBuild14FullPath)') and !Exists('$(MSBuildCurrentFullPath)')" />
+	<Target Name="GenerateRazorClasses" Condition="Exists('$(PkgRazorGenerator_MsBuild)\build\RazorGenerator.MsBuild.targets')">
+		<Exec Command="&quot;$(MSBuildCurrentFullPath)&quot; $(RazorProjectFile) /v:quiet /nologo /p:PkgRazorGenerator_MsBuild=&quot;$(PkgRazorGenerator_MsBuild)&quot;" Condition="Exists('$(MSBuildCurrentFullPath)')" />
+		<Exec Command="&quot;$(MSBuild14FullPath)&quot; $(RazorProjectFile) /v:quiet /nologo /p:PkgRazorGenerator_MsBuild=&quot;$(PkgRazorGenerator_MsBuild)&quot;" Condition="Exists('$(MSBuild14FullPath)') and !Exists('$(MSBuildCurrentFullPath)')" />
 		<Warning Text="Classes for Razor files (*.cshtml) weren't re-generated: couldn't find the '$(MSBuild14FullPath)' or '$(MSBuildCurrentFullPath)' file" Condition="!Exists('$(MSBuild14FullPath)') and !Exists('$(MSBuildCurrentFullPath)')" />
 	</Target>
 
 	<ItemGroup>
 		<PackageReference Include="HangFire.Core" Version="1.7.28" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="RazorGenerator.MsBuild" Version="2.5.0" GeneratePathProperty="true">
+			<PrivateAssets>all</PrivateAssets>
+			<ExcludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</ExcludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<Target Name="CopyContentFiles" BeforeTargets="ResolveReferences">
+		<ItemGroup>
+			<ClientResourceFilesHDM Include="$(MSBuildProjectDirectory)\Content\management.*;$(MSBuildProjectDirectory)\Content\jsm-init.js">
+				<BasePath>$(MSBuildProjectDirectory)\Content</BasePath>
+				<ResourcePath>Content</ResourcePath>
+			</ClientResourceFilesHDM>
+
+			<ClientResourceFilesHDM Include="$(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist\**\tempus-dominus.min.*; $(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist\js\tempus-dominus.js.map; $(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist\css\tempus-dominus.css.map; $(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist\locales\*.js">
+				<BasePath>$(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist</BasePath>
+				<ResourcePath>Content/libs/TempusDominus</ResourcePath>
+			</ClientResourceFilesHDM>
+
+			<ClientResourceFilesHDM Include="$(MSBuildProjectDirectory)\node_modules\@popperjs\core\dist\umd\popper.min.js; $(MSBuildProjectDirectory)\node_modules\@popperjs\core\dist\umd\popper.min.js.map">
+				<BasePath>$(MSBuildProjectDirectory)\node_modules\@popperjs\core\dist\umd</BasePath>
+				<ResourcePath>Content/libs/PopperJS</ResourcePath>
+			</ClientResourceFilesHDM>
+
+			<ClientResourceFilesHDM Include="$(MSBuildProjectDirectory)\node_modules\@fortawesome\fontawesome-free\css\fontawesome.min.css; $(MSBuildProjectDirectory)\node_modules\@fortawesome\fontawesome-free\css\solid.min.css; $(MSBuildProjectDirectory)\node_modules\@fortawesome\fontawesome-free\webfonts\fa-solid-900.*">
+				<BasePath>$(MSBuildProjectDirectory)\node_modules\@fortawesome\fontawesome-free</BasePath>
+				<ResourcePath>Content/libs/FontAwesome</ResourcePath>
+			</ClientResourceFilesHDM>
+
+			<ClientResourceFilesHDM Include=" $(MSBuildProjectDirectory)\node_modules\inputmask\dist\inputmask.min.js;">
+				<BasePath>$(MSBuildProjectDirectory)\node_modules\inputmask\dist</BasePath>
+				<ResourcePath>Content/libs/InputMask</ResourcePath>
+			</ClientResourceFilesHDM>
+
+		</ItemGroup>
+	</Target>
+
+	<Target Name="EmbedClientResources" AfterTargets="CopyContentFiles">
+		<!--<Message Text="From: %(ClientResourceFilesHDM.Identity)" />
+		<Message Text="  To: $(RootNamespace).%(ClientResourceFilesHDM.ResourcePath)$([System.String]::Copy('%(ClientResourceFilesHDM.Identity)').Replace('%(ClientResourceFilesHDM.BasePath)', '').Replace('\', '/').Replace('.', '_'))" />-->
+		<ItemGroup>
+			<EmbeddedResource Include="%(ClientResourceFilesHDM.Identity)">
+				<LogicalName>%(ClientResourceFilesHDM.ResourcePath)$([System.String]::Copy('%(ClientResourceFilesHDM.Identity)').Replace('%(ClientResourceFilesHDM.BasePath)', '').Replace('\', '/').Replace('.', '_'))</LogicalName>
+			</EmbeddedResource>
+		</ItemGroup>
+	</Target>
+
+	<ItemGroup>
+		<Compile Update="Pages\ManagementBasePage.cshtml.cs">
+			<DependentUpon>ManagementBasePage.cshtml</DependentUpon>
+		</Compile>
+		<Compile Update="Pages\ManagementPage.cshtml.cs">
+			<DependentUpon>ManagementPage.cshtml</DependentUpon>
+		</Compile>
+		<Compile Update="Pages\Partials\ButtonPartial.cshtml.cs">
+			<DependentUpon>ButtonPartial.cshtml</DependentUpon>
+		</Compile>
+		<Compile Update="Pages\Partials\ClientResources.cshtml.cs">
+			<DependentUpon>ClientResources.cshtml</DependentUpon>
+		</Compile>
+		<Compile Update="Pages\Partials\CronExpressionBuilder.cshtml.cs">
+			<DependentUpon>CronExpressionBuilder.cshtml</DependentUpon>
+		</Compile>
+		<Compile Update="Pages\Partials\ManagementSidebarPartial.cshtml.cs">
+			<DependentUpon>ManagementSidebarPartial.cshtml</DependentUpon>
+		</Compile>
+		<Compile Update=" Pages\Partials\PanelPartial.cshtml.cs">
+			<DependentUpon>PanelPartial.cshtml</DependentUpon>
+		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>

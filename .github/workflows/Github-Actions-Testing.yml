@@ -1,4 +1,4 @@
-﻿name: Master Build
+﻿name: Github Actions Testing
 
 #on:
 #  push:
@@ -24,17 +24,17 @@ jobs:
       working-directory: ./src
 
     - name: Restore NuGet packages
-      run: dotnet restore
+      run: dotnet restore --locked-mode
 
     - name: Generate *.cshtml.cs files
-      run: dotnet build ./src/Hangfire.Dashboard.Management.v2.csproj --configuration Release -target:GenerateRazorClasses -p:PkgRazorGenerator_MsBuild="$NUGET_PACKAGES\razorgenerator.msbuild"
+      run: dotnet build ./src/Hangfire.Dashboard.Management.v2.csproj --configuration Release -target:GenerateRazorClasses -p:PkgRazorGenerator_MsBuild="$NUGET_PACKAGES\razorgenerator.msbuild\2.5.0"
 
     - name: Build Project
       run: dotnet build ./src/Hangfire.Dashboard.Management.v2.csproj --configuration Release
 
-    - name: Publish nuget
-      run: dotnet nuget push ./src/artifacts/*.nupkg
-            --api-key ${{ secrets.NUGET_API_KEY }}
-            --source https://api.nuget.org/v3/index.json
-            --no-symbols
-            --skip-duplicate
+    # - name: Publish nuget
+    #   run: dotnet nuget push ./src/artifacts/*.nupkg
+    #         --api-key ${{ secrets.NUGET_API_KEY }}
+    #         --source https://api.nuget.org/v3/index.json
+    #         --no-symbols
+    #         --skip-duplicate
