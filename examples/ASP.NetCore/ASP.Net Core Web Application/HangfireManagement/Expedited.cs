@@ -4,6 +4,7 @@ using Hangfire;
 using Hangfire.Dashboard.Management.v2.Metadata;
 using Hangfire.Dashboard.Management.v2.Support;
 using Hangfire.Server;
+using Newtonsoft.Json;
 
 namespace ASP.Net_Core_Web_Application.HangfireManagement
 {
@@ -11,6 +12,29 @@ namespace ASP.Net_Core_Web_Application.HangfireManagement
 	/*              A                            B                        */
 	public class Expedited : IJob
 	{
+		private const string dateTimeOptions = @"
+{
+	""display"": {
+		""buttons"": {
+			""clear"": true,
+			""close"": false,
+			""today"": true
+		}
+	},
+	""localization"": {
+		""format"": ""L"",
+		""clear"": ""This button clears the current value"",
+		""hourCycle"": ""h12"",
+		""dayViewHeaderFormat"": {
+			""month"": ""long"",
+			""year"": ""numeric""
+		}
+	},
+	""restrictions"": {
+		""minDate"": ""01/01/2020 0:00""
+	}
+}";
+
 		[DisplayName("Job Number 1")] //C
 		[Description("This is the description for Job Number 1")] //D
 		[Queue("expedited")]
@@ -42,8 +66,9 @@ namespace ASP.Net_Core_Web_Application.HangfireManagement
 			[DisplayData(
 				Label = "DateTime Input",
 				Placeholder = "What is the date and time?",
-				DefaultValue = "1/20/2020 1:02 AM",
-				Description = "This is a date time input control"
+				DefaultValue = "01/20/2020 1:02 AM",
+				Description = "This is a date time input control"//,
+				//ControlConfiguration = dateTimeOptions
 			)] DateTime dtInput,
 
 			[DisplayData(

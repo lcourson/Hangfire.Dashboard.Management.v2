@@ -2,6 +2,7 @@
 
 @using Hangfire.Dashboard
 @using Hangfire.Dashboard.Management.v2
+@using Hangfire.Dashboard.Management.v2.Support;
 @using Newtonsoft.Json;
 @inherits Hangfire.Dashboard.RazorPage
 @{
@@ -12,9 +13,11 @@
      */
 }
 
-<div id="hdmConfig" data-version="@version" data-assetbaseurl="@assetBaseUrl"></div>
+<div id="hdmConfig" class="d-none" data-version="@version" data-assetbaseurl="@assetBaseUrl" data-controlconfigs="@JsonConvert.SerializeObject(JobsHelper.ClientSideConfigurationOptions, Formatting.None, new JsonSerializerSettings{ TypeNameHandling = TypeNameHandling.None, NullValueHandling = NullValueHandling.Ignore })"></div>
+
 <link rel="stylesheet" type="text/css" href="@assetBaseUrl/libs/FontAwesome/css/fontawesome_min_css" />
 <link rel="stylesheet" type="text/css" href="@assetBaseUrl/libs/FontAwesome/css/solid_min_css" />
 <link rel="stylesheet" type="text/css" href="@assetBaseUrl/libs/TempusDominus/css/tempus-dominus_min_css" />
+@* <link rel="stylesheet" type="text/css" href="@assetBaseUrl/libs/TempusDominus/css/tempus-dominus_css" /> *@
 <link rel="stylesheet" type="text/css" href="@assetBaseUrl/management_css" />
 <script src="@assetBaseUrl/jsm-init_js"></script>

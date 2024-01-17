@@ -2,6 +2,8 @@
 @using Hangfire.Dashboard.Management.v2
 @using Hangfire.Dashboard.Management.v2.Pages
 @using Hangfire.Dashboard.Management.v2.Support
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Converters;
 @inherits Hangfire.Dashboard.RazorPage
 @{
 	var url = $"{ManagementPage.UrlRoute}/{Job.JobId.ScrubURL()}";
@@ -46,7 +48,7 @@
 </div>
 <!-- Schedule DateTime Command-->
 <div class="commands-options ScheduleDateTime col-xs-12 col-sm-6 hide">
-	<div class='hdm-execution-input input-group date' id="@($"{JobId}_datetimepicker")">
+	<div class='hdm-execution-input input-group date' id="@($"{JobId}_datetimepicker")" data-td_options="@JsonConvert.SerializeObject(JsonConvert.DeserializeObject(JobsHelper.ClientSideConfigurationOptions.DateTimeOpts.ScheduleButtonOptions), Formatting.None)">
 		<input type='text' class="form-control" placeholder="Enter a Date" id="@($"{JobId}_sys_datetime")" />
 		<span class="input-group-addon">
 			<span class="glyphicon glyphicon-calendar"></span>
@@ -87,11 +89,11 @@
 
 <!-- Cron Expression Command -->
 <div class="commands-options CronExpression col-xs-12 col-sm-5 hide">
-    <input class="form-control hdm-execution-input-exp" title="Enter a cron expression" id="@($"{JobId}_sys_cron")" placeholder="* 1 * * *" value="" />
+	<input class="form-control hdm-execution-input-exp" title="Enter a cron expression" id="@($"{JobId}_sys_cron")" placeholder="* 1 * * *" value="" />
 </div>
 @if (Job.AllowMultiple)
 {
-    <div class="commands-options CronExpression col-xs-12 col-sm-4 hide">
+	<div class="commands-options CronExpression col-xs-12 col-sm-4 hide">
 		<div class="input-group" id="@($"{JobId}_Name")">
 			<input type="text" class="hdm-execution-input-name form-control" title="" placeholder="Job Name" id="@($"{JobId}_sys_name")" data-original-title="Give a unique name to your job" spellcheck="false" data-ms-editor="true">
 		</div>

@@ -9,22 +9,60 @@
 				$(this).hide().removeClass('hide');
 			})
 
+			let defaultTempusDominusOptions = { localization: tempusDominus.DefaultOptions.localization }
+			let controlConfigs = $("#hdmConfig").data("controlconfigs");
+			if (controlConfigs) {
+				if (controlConfigs.dateTimeOpts) {
+					if (controlConfigs.dateTimeOpts.locale !== 'default') {
+						if (tempusDominus.locales[controlConfigs.dateTimeOpts.locale]) {
+							tempusDominus.DefaultOptions.localization = $.extend(tempusDominus.DefaultOptions.localization, tempusDominus.locales[controlConfigs.dateTimeOpts.locale].localization);
+						}
+					}
+				}
+			}
 			$("div[id$='_datetimepicker']").each(function () {
 				let tdElement = $(this)
+
+				let options = tdElement.data('td_options');
+
 				let tdInput = $(this).find('input')
 
 				if (tdInput) {
-					let defaultVal = tdInput.val();
-					let td = new tempusDominus.TempusDominus(this);
+					let defaultVal = tdElement.data('td_value');
+					let td;
 
-					tdElement.on('change.td', function (tdEvent) {
-						//console.log(tdEvent.date.toISOString())
-						tdElement.data('date', tdEvent.date.toISOString());
-					});
+					td = new tempusDominus.TempusDominus(this);
+
+					if (options) {
+						//console.log('Found Options: ', options)
+						if (options.localization) {
+							//console.log('Old Localization: ', options.localization);
+							let newLocalization = $.extend({}, tempusDominus.DefaultOptions.localization, options.localization);
+							options.localization = newLocalization;
+							//console.log('New Localization: ', options.localization);
+						}
+						td.updateOptions(options, true);
+					}
+
+					tdElement
+						.on('change.td', function (tdEvent) {
+							//console.log(tdEvent.date.toISOString())
+							if (tdEvent.date) {
+								tdElement.data('date', tdEvent.date.toISOString());
+							}
+							else {
+								tdElement.data('date', null);
+							}
+						})
+						.on('error.td', function (tdEvent) {
+							console.error('Error from Tempus Dominus : ', tdEvent)
+						});
 
 					if (defaultVal) {
-						let parsedDate = td.dates.parseInput(new Date(defaultVal));
-						td.dates.setValue(parsedDate);
+						let parsedDateTime = td.dates.parseInput(defaultVal);
+						if (tempusDominus.DateTime.isValid(parsedDateTime)) {
+							td.dates.setFromInput(parsedDateTime);
+						}
 					}
 				}
 			});

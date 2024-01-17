@@ -135,7 +135,7 @@ WriteLiteral("\r\n");
             #line 20 "..\..\Pages\Partials\PanelPartial.cshtml"
  foreach (var job in Jobs)
 {
-    var id = $"{SectionName}_{job.Name.ScrubURL()}";
+    var id = $"{SectionName}_{job.MethodName.ScrubURL()}";
     var expanded = Jobs.First() == job;
 
     var options = new JObject();

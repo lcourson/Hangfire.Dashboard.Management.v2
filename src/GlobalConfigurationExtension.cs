@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Hangfire.Dashboard.Management.v2.Pages;
 using Hangfire.Dashboard.Management.v2.Support;
@@ -18,20 +19,31 @@ namespace Hangfire.Dashboard.Management.v2
 
 		internal static string GetAssetBaseURL() => $"{RouteBase}/{FileSuffix()}/assets";
 
-		public static void UseManagementPages(this IGlobalConfiguration config, Assembly assembly)
+		public static IGlobalConfiguration UseManagementPages(this IGlobalConfiguration config, Assembly assembly, ClientSideConfigurations configOptions = null)
 		{
 			JobsHelper.GetAllJobs(assembly);
-			AddClientResourceRoutes();
-			CreateManagement();
+			InitStandard(configOptions);
+			return config;
 		}
-		public static void UseManagementPages(this IGlobalConfiguration config, Assembly[] assemblies)
+		public static IGlobalConfiguration UseManagementPages(this IGlobalConfiguration config, Assembly[] assemblies, ClientSideConfigurations configOptions = null)
 		{
 			foreach (var assembly in assemblies)
 			{
 				JobsHelper.GetAllJobs(assembly);
 			}
+			InitStandard(configOptions);
+			return config;
+		}
+
+		private static void InitStandard(ClientSideConfigurations configOptions)
+		{
 			AddClientResourceRoutes();
 			CreateManagement();
+
+			if (configOptions != null)
+			{
+				JobsHelper.ClientSideConfigurationOptions = configOptions;
+			}
 		}
 
 		public static Tuple<string, string> GetResourceInfo(string resourceName)

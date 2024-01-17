@@ -28,12 +28,16 @@ namespace ASP.Net_Core_Web_Application
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			var clientSideConfig = new ClientSideConfigurations();
+			clientSideConfig.DateTimeOpts.Locale = ClientSideConfigurations.DateTimeOptions.DateTimeLocales.ru;
+
 			services.AddHangfire((configuration) => {
 				configuration
 					.UseMemoryStorage()
 					.UseSimpleAssemblyNameTypeSerializer()
 					.UseRecommendedSerializerSettings()
-					.UseManagementPages(typeof(Startup).Assembly);
+					.UseManagementPages(typeof(Startup).Assembly, clientSideConfig)
+					;
 			});
 
 			services.AddHangfireServer((options) => {

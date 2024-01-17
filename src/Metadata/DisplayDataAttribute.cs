@@ -50,8 +50,15 @@ namespace Hangfire.Dashboard.Management.v2.Metadata
 		/// </summary>
 		public bool IsRequired { get; set; } = false;
 
+		/// <summary>
+		/// Specific JSON configuration data that is parsed on the client side for the control.
+		/// Currently only processed for the DateTime parameters.
+		/// Refer to https://getdatepicker.com/6/options/ for all DateTime control configuration options available.
+		/// </summary>
+		public string ControlConfiguration { get; set; } = null;
+
 		public DisplayDataAttribute() { }
-		public DisplayDataAttribute(string label = null, string placeholder = null, string description = null, object defaultValue = null, string cssClasses = null, bool isDisabled = false, bool isRequired = false, bool isMultiline = false)
+		public DisplayDataAttribute(string label = null, string placeholder = null, string description = null, object defaultValue = null, string cssClasses = null, bool isDisabled = false, bool isRequired = false, bool isMultiline = false, string controlConfiguration = null)
 		{
 			this.Label = label;
 			this.Placeholder = placeholder;
@@ -61,6 +68,7 @@ namespace Hangfire.Dashboard.Management.v2.Metadata
 			this.IsDisabled = isDisabled;
 			this.IsRequired = isRequired;
 			this.IsMultiLine = isMultiline;
+			this.ControlConfiguration = controlConfiguration;
 		}
 	}
 }

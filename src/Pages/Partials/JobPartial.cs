@@ -7,6 +7,8 @@ using Hangfire.Annotations;
 using Hangfire.Common;
 using Hangfire.Dashboard.Management.v2.Metadata;
 using Hangfire.Server;
+using Hangfire.Storage.Monitoring;
+using Newtonsoft.Json;
 
 namespace Hangfire.Dashboard.Management.v2.Pages.Partials
 {
@@ -62,7 +64,7 @@ namespace Hangfire.Dashboard.Management.v2.Pages.Partials
 				}
 				else if (parameterInfo.ParameterType == typeof(DateTime))
 				{
-					inputs += InputDatebox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled, displayInfo.IsRequired);
+					inputs += InputDatebox(myId, displayInfo.CssClasses, labelText, placeholderText, displayInfo.Description, displayInfo.DefaultValue, displayInfo.IsDisabled, displayInfo.IsRequired, displayInfo.ControlConfiguration);
 				}
 				else if (parameterInfo.ParameterType == typeof(bool))
 				{
@@ -138,13 +140,17 @@ namespace Hangfire.Dashboard.Management.v2.Pages.Partials
 			return Input(id, cssClasses, labelText, placeholderText, descriptionText, "number", defaultValue, isDisabled, isRequired);
 		}
 
-		protected string InputDatebox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false, bool isRequired = false)
+		protected string InputDatebox(string id, string cssClasses, string labelText, string placeholderText, string descriptionText, object defaultValue = null, bool isDisabled = false, bool isRequired = false, string controlConfig = "")
 		{
+			if (!string.IsNullOrWhiteSpace(controlConfig))
+			{
+				controlConfig = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(controlConfig), Formatting.None);
+			}
 			return $@"
 <div class=""form-group {cssClasses} {(isRequired ? "required" : "")}"">
 	<label for=""{id}"" class=""control-label"">{labelText}</label>
-	<div class='hdm-job-input-container hdm-input-date-container input-group date' id='{id}_datetimepicker'>
-		<input type='text' class=""hdm-job-input hdm-input-date form-control"" placeholder=""{placeholderText}"" value=""{defaultValue}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")} />
+	<div class='hdm-job-input-container hdm-input-date-container input-group date' id='{id}_datetimepicker' data-td_options='{controlConfig}' data-td_value='{defaultValue}'>
+		<input type='text' class=""hdm-job-input hdm-input-date form-control"" placeholder=""{placeholderText}"" {(isDisabled ? "disabled='disabled'" : "")} {(isRequired ? "required='required'" : "")} />
 		<span class=""input-group-addon"">
 			<span class=""glyphicon glyphicon-calendar""></span>
 		</span>

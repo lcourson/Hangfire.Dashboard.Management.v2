@@ -63,14 +63,25 @@ function SyncLoadInOrder(urls) {
 
 function AddJSMScriptTags() {
 	let assetBaseUrl = $("#hdmConfig").data("assetbaseurl")
+	let controlConfigs = $("#hdmConfig").data("controlconfigs");
 
 	let importUrls = [
 		`${assetBaseUrl}/libs/PopperJS/popper_min_js`,
 		`${assetBaseUrl}/libs/TempusDominus/js/tempus-dominus_min_js`,
-		`${assetBaseUrl}/libs/InputMask/inputmask_min_js`,
-		`${assetBaseUrl}/management_js`
+		//`${assetBaseUrl}/libs/TempusDominus/js/tempus-dominus_js`,
+		`${assetBaseUrl}/libs/InputMask/inputmask_min_js`
 	];
 
+	if (controlConfigs) {
+		if (controlConfigs.dateTimeOpts) {
+			if (controlConfigs.dateTimeOpts.locale !== 'default') {
+				importUrls.push(`${assetBaseUrl}/libs/TempusDominus/locales/${controlConfigs.dateTimeOpts.locale}_js`);
+			}
+		}
+	}
+
+	//Added last so dynamic locale js files can be loaded.
+	importUrls.push(`${assetBaseUrl}/management_js`);
 	SyncLoadInOrder(importUrls);
 
 	$('.credit').append('<li>|</li><li>Management ' + $("#hdmConfig").data("version") + "</li>");

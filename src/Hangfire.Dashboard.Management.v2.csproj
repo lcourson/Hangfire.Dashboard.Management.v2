@@ -21,9 +21,7 @@
 		<Product>Hangfire.Dashboard.Management.v2</Product>
 		<AssemblyVersion>2.3.2.0</AssemblyVersion>
 		<PackageReleaseNotes>
-			2.3.2
-
-			Update to how client resources are built and delivered
+			See CHANGELOG.md for details
 		</PackageReleaseNotes>
 		<UpdateVersionProperties>true</UpdateVersionProperties>
 		<UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
@@ -78,6 +76,11 @@
 			<ClientResourceFilesHDM Include="$(MSBuildProjectDirectory)\Content\management.*;$(MSBuildProjectDirectory)\Content\jsm-init.js">
 				<BasePath>$(MSBuildProjectDirectory)\Content</BasePath>
 				<ResourcePath>Content</ResourcePath>
+			</ClientResourceFilesHDM>
+
+			<ClientResourceFilesHDM Condition="'$(Configuration)'!='Release'" Include="$(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist\css\tempus-dominus.css; $(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist\js\tempus-dominus.js">
+				<BasePath>$(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist</BasePath>
+				<ResourcePath>Content/libs/TempusDominus</ResourcePath>
 			</ClientResourceFilesHDM>
 
 			<ClientResourceFilesHDM Include="$(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist\**\tempus-dominus.min.*; $(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist\js\tempus-dominus.js.map; $(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist\css\tempus-dominus.css.map; $(MSBuildProjectDirectory)\node_modules\@eonasdan\tempus-dominus\dist\locales\*.js">
