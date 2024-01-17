@@ -4,8 +4,6 @@ All notable changes to this project will be documented in this file.
 
 ## [2.3.2] - 2024-1-17
 
-Minor updates and tweaks.
-
 ## Changed
 - Migrated javascript libraries to use npm instead of ones included in the library project.
 - Altered the way that client resources are loaded using a new dispatcher class
