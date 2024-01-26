@@ -27,7 +27,7 @@ namespace Hangfire.Dashboard.Management.v2.Support
 				if (ti.GetCustomAttributes(true).OfType<ManagementPageAttribute>().Any())
 				{
 					var mgmtPageAttr = ti.GetCustomAttribute<ManagementPageAttribute>();
-					title = mgmtPageAttr.Title;
+					title = mgmtPageAttr.Title ?? mgmtPageAttr.MenuName;
 					menuName = mgmtPageAttr.MenuName;
 					if (!Pages.Any(x => x.MenuName == menuName)) Pages.Add(mgmtPageAttr);
 				}

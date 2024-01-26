@@ -3,23 +3,23 @@
 		<TargetFrameworks>netstandard2.0</TargetFrameworks>
 		<IsPackable>true</IsPackable>
 		<PackageOutputPath>artifacts</PackageOutputPath>
-		<PackageId>Hangfire.Dashboard.Management.v2</PackageId>
+		<PackageId>Lawrence.Hangfire.Dashboard.Management</PackageId>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<IncludeContentInPack>true</IncludeContentInPack>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<RepositoryUrl>https://github.com/lcourson/Hangfire.Dashboard.Management.v2</RepositoryUrl>
-		<PackageProjectUrl>https://github.com/lcourson/Hangfire.Dashboard.Management.v2</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/lawrence8358/Hangfire.Dashboard.Management.v2</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/lawrence8358/Hangfire.Dashboard.Management.v2</PackageProjectUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<Description>A Hangfire Dashboard Addon UI with job parameter support for manually kicking off Hangfire Jobs.</Description>
-		<Version>2.3.2.0</Version>
+		<Version>1.0.0</Version>
 		<PackageTags>hangfire dashboard management</PackageTags>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
-		<Authors>Lance Courson</Authors>
+		<Authors>Lawrence Shen</Authors>
 		<Company />
 		<Product>Hangfire.Dashboard.Management.v2</Product>
-		<AssemblyVersion>2.3.2.0</AssemblyVersion>
+		<AssemblyVersion>1.0.0</AssemblyVersion>
 		<PackageReleaseNotes>
 			See CHANGELOG.md for details
 		</PackageReleaseNotes>
